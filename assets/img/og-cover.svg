@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="MORNING BREAKFAST DELIGHT">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3b2a23"/><stop offset="1" stop-color="#241a16"/>
+    </linearGradient>
+    <pattern id="p" width="54" height="54" patternUnits="userSpaceOnUse" patternTransform="rotate(24)">
+      <circle cx="10" cy="10" r="2.6" fill="#fdb100" opacity=".10"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#g)"/>
+  <rect width="1200" height="630" fill="url(#p)"/>
+  <g transform="translate(600.0,189.0)" opacity=".5">
+    <rect x="-47.25" y="-36.54" width="94.5" height="73.08" rx="10.08"
+          fill="none" stroke="#fdb100" stroke-width="5.04"/>
+    <circle cx="-20.16" cy="-13.86" r="10.08" fill="#fdb100"/>
+    <path d="M-47.25 18.9 L-11.34 -10.08 L12.6 10.08 L28.98 -3.7800000000000002 L47.25 18.9 Z"
+          fill="#fdb100"/>
+  </g>
+  <text x="50%" y="270.9" text-anchor="middle" fill="#fdb100" opacity=".42"
+        font-family="Outfit, system-ui, sans-serif" font-weight="700"
+        font-size="20" letter-spacing="3.8">MORNING BREAKFAST DELIGHT</text>
+</svg>
