@@ -111,10 +111,18 @@ a harmless 404 for each and uses the fallback.
 ## Deploying
 
 The workflow in `.github/workflows/pages.yml` publishes every push to
-`claude/restaurant-website-ydodav`.
+`claude/restaurant-website-ydodav` (currently the repository's default branch).
 
-**One-time setup:** in the repo, go to **Settings → Pages → Build and deployment**
-and set **Source** to **GitHub Actions**. The next push publishes to:
+### One-time setup — required before the first publish
+
+Go to **[Settings → Pages](https://github.com/jaminjv/mbdchicago/settings/pages)**
+and under **Build and deployment** set **Source** to **GitHub Actions**.
+
+This cannot be automated: the token available to a workflow is not permitted to
+create a Pages site, so the first run fails with *"Resource not accessible by
+integration"* until the switch is flipped. Once it is on, re-run the latest job
+from the **[Actions tab](https://github.com/jaminjv/mbdchicago/actions)** (or push
+any commit) and the site goes live at:
 
 ```
 https://jaminjv.github.io/mbdchicago/
