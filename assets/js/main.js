@@ -53,13 +53,35 @@
   /* ---------- Hero video -----------------------------------
      The banner is silent on purpose: the source file carries no
      audio track and the element stays muted, which is also what
-     lets it autoplay at all. */
+     lets it autoplay at all.
+
+     data-cut trims the loop without touching the file — the clip
+     restarts at that many seconds instead of running to the end. */
   function initHero() {
     const video = $(".hero__media video");
     if (!video) return;
+
     video.muted = true;
-    const play = video.play();
-    if (play && play.catch) play.catch(() => {});
+    video.playsInline = true;
+
+    const cut = parseFloat(video.dataset.cut);
+    if (cut > 0) {
+      // timeupdate fires every ~250ms, so the restart lands close enough
+      // to the mark to read as a clean loop.
+      video.addEventListener("timeupdate", () => {
+        if (video.currentTime >= cut) video.currentTime = 0;
+      });
+      // Safari can fire seeked with the element paused after a wrap.
+      video.addEventListener("seeked", () => { if (video.paused) video.play().catch(() => {}); });
+    }
+
+    const start = () => { const p = video.play(); if (p && p.catch) p.catch(() => {}); };
+    start();
+    // Some browsers refuse the first play() until the tab is interacted with
+    // or the metadata lands; retry on both.
+    video.addEventListener("loadeddata", start);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) start(); });
+
     // If the file is missing or undecodable, fall back to the poster.
     video.addEventListener("error", () => { video.style.display = "none"; }, true);
   }

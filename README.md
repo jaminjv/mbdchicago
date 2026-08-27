@@ -159,11 +159,26 @@ from the file itself, and the `<video>` element stays `muted` with no unmute
 control anywhere in the UI. Muting is also what allows browsers to autoplay it
 at all — an unmuted autoplaying video is blocked.
 
+The clip is **trimmed to 8 seconds in the player, not in the file** — the
+`data-cut="8"` attribute on the `<video>` sends it back to zero at that mark
+instead of running to the end. Change the number to change the loop length;
+remove the attribute to play the whole thing. Trimming this way avoids
+re-encoding, which would cost a generation of quality.
+
 To replace it, overwrite `hero.mp4` and update `assets/img/hero-poster.jpg`
 with a frame from the new footage (the poster is what shows while the video
 loads, so a mismatch reads as a flicker). If the new file has an audio track,
 either strip it before committing or the `muted` attribute will keep it quiet
 on its own.
+
+### Why the preview handles the video differently
+
+Safari will not play a `<video>` whose source is a `data:` URI — it wants byte
+ranges, which data: URIs cannot serve — so a naively inlined clip plays in
+Chromium and silently fails on iPad and Mac. `preview.html` therefore ships the
+clip as `data-src` and converts it to a `blob:` URL at load, falling back to
+the data: URI if blob creation is blocked. The deployed site is unaffected: it
+loads the mp4 over plain HTTP like any other asset.
 
 ## The single-file preview
 
