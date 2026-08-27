@@ -22,12 +22,35 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      # Requires Pages to be switched on once, by hand:
+
+      # Pages has to be switched on by hand once, under
       # Settings -> Pages -> Build and deployment -> Source: GitHub Actions.
-      # The workflow token is not allowed to create the Pages site itself.
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      # A workflow token is not allowed to create the Pages site itself, so
+      # without this check every push would fail the run and mail the owner.
+      # Skip instead, and start deploying on its own once the toggle is on.
+      - id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/${{ github.repository }}/pages" >/dev/null 2>&1; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            {
+              echo "### GitHub Pages is not enabled yet"
+              echo
+              echo "Nothing was deployed. To turn it on, open"
+              echo "**Settings → Pages → Build and deployment** and set"
+              echo "**Source** to **GitHub Actions**, then re-run this workflow."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - if: steps.check.outputs.enabled == 'true'
+        uses: actions/configure-pages@v5
+      - if: steps.check.outputs.enabled == 'true'
+        uses: actions/upload-pages-artifact@v3
         with:
           path: .
-      - id: deployment
+      - if: steps.check.outputs.enabled == 'true'
+        id: deployment
         uses: actions/deploy-pages@v4

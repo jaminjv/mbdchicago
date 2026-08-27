@@ -212,6 +212,24 @@ p  { text-wrap: pretty; }
 }
 @keyframes bob { 0%,100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 8px); } }
 
+/* Shown only when the browser refuses to autoplay the banner. */
+.hero__play {
+  /* In the hero copy rather than pinned to a corner: on a tall hero a
+     corner button can sit below the fold, which is exactly the moment
+     it is needed. */
+  align-self: flex-start; margin-top: 2rem; position: relative; z-index: 3;
+  display: flex; align-items: center; gap: .55rem;
+  padding: .6rem 1.1rem .6rem .8rem;
+  background: var(--sunny); color: var(--cocoa);
+  border: 3px solid var(--cocoa); border-radius: 999px;
+  font-weight: 800; font-size: .9rem;
+  box-shadow: 0 5px 0 var(--cocoa);
+  transition: transform .16s cubic-bezier(.34,1.56,.64,1), box-shadow .16s;
+}
+.hero__play[hidden] { display: none; }
+.hero__play:hover { transform: translateY(-3px); box-shadow: 0 8px 0 var(--cocoa); }
+.hero__play svg { width: 20px; height: 20px; }
+
 /* Wavy edge under the hero */
 .wave { display: block; width: 100%; height: clamp(40px, 5vw, 72px); }
 .wave--cream { color: var(--cream); }
@@ -618,6 +636,10 @@ p  { text-wrap: pretty; }
       <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Open 7 days</li>
       <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1116 0z"/><circle cx="12" cy="10" r="3"/></svg>North Center, Chicago</li>
     </ul>
+    <button class="hero__play" type="button" hidden>
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
+      <span>Play the video</span>
+    </button>
   </div>
   <div class="hero__scroll" aria-hidden="true">Scroll
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
@@ -1308,35 +1330,47 @@ window.MBD = (function () {
      audio track and the element stays muted, which is also what
      lets it autoplay at all.
 
+     Autoplay is still refusable — iOS Low Power Mode blocks it
+     outright, and Safari will not autoplay inside an iframe that
+     was not granted the autoplay permission. Neither is something
+     the page can talk its way out of, so when play() is rejected
+     we surface a button; a real tap is always allowed.
+
      data-cut trims the loop without touching the file — the clip
      restarts at that many seconds instead of running to the end. */
   function initHero() {
     const video = $(".hero__media video");
     if (!video) return;
+    const cue = $(".hero__play");
 
     video.muted = true;
     video.playsInline = true;
 
     const cut = parseFloat(video.dataset.cut);
     if (cut > 0) {
-      // timeupdate fires every ~250ms, so the restart lands close enough
-      // to the mark to read as a clean loop.
       video.addEventListener("timeupdate", () => {
         if (video.currentTime >= cut) video.currentTime = 0;
       });
-      // Safari can fire seeked with the element paused after a wrap.
       video.addEventListener("seeked", () => { if (video.paused) video.play().catch(() => {}); });
     }
 
-    const start = () => { const p = video.play(); if (p && p.catch) p.catch(() => {}); };
-    start();
-    // Some browsers refuse the first play() until the tab is interacted with
-    // or the metadata lands; retry on both.
-    video.addEventListener("loadeddata", start);
-    document.addEventListener("visibilitychange", () => { if (!document.hidden) start(); });
+    const showCue = () => { if (cue) cue.hidden = false; };
+    const hideCue = () => { if (cue) cue.hidden = true; };
 
-    // If the file is missing or undecodable, fall back to the poster.
-    video.addEventListener("error", () => { video.style.display = "none"; }, true);
+    const attempt = () => {
+      const p = video.play();
+      if (!p || !p.then) return;
+      p.then(hideCue).catch(showCue);
+    };
+
+    attempt();
+    video.addEventListener("loadeddata", attempt);
+    video.addEventListener("playing", hideCue);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) attempt(); });
+    if (cue) cue.addEventListener("click", () => { video.play().then(hideCue).catch(() => {}); });
+
+    // If the file is missing or undecodable, keep the poster and drop the cue.
+    video.addEventListener("error", () => { video.style.display = "none"; hideCue(); }, true);
   }
 
   /* ---------- Hours ---------------------------------------- */

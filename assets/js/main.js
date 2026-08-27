@@ -55,35 +55,47 @@
      audio track and the element stays muted, which is also what
      lets it autoplay at all.
 
+     Autoplay is still refusable — iOS Low Power Mode blocks it
+     outright, and Safari will not autoplay inside an iframe that
+     was not granted the autoplay permission. Neither is something
+     the page can talk its way out of, so when play() is rejected
+     we surface a button; a real tap is always allowed.
+
      data-cut trims the loop without touching the file — the clip
      restarts at that many seconds instead of running to the end. */
   function initHero() {
     const video = $(".hero__media video");
     if (!video) return;
+    const cue = $(".hero__play");
 
     video.muted = true;
     video.playsInline = true;
 
     const cut = parseFloat(video.dataset.cut);
     if (cut > 0) {
-      // timeupdate fires every ~250ms, so the restart lands close enough
-      // to the mark to read as a clean loop.
       video.addEventListener("timeupdate", () => {
         if (video.currentTime >= cut) video.currentTime = 0;
       });
-      // Safari can fire seeked with the element paused after a wrap.
       video.addEventListener("seeked", () => { if (video.paused) video.play().catch(() => {}); });
     }
 
-    const start = () => { const p = video.play(); if (p && p.catch) p.catch(() => {}); };
-    start();
-    // Some browsers refuse the first play() until the tab is interacted with
-    // or the metadata lands; retry on both.
-    video.addEventListener("loadeddata", start);
-    document.addEventListener("visibilitychange", () => { if (!document.hidden) start(); });
+    const showCue = () => { if (cue) cue.hidden = false; };
+    const hideCue = () => { if (cue) cue.hidden = true; };
 
-    // If the file is missing or undecodable, fall back to the poster.
-    video.addEventListener("error", () => { video.style.display = "none"; }, true);
+    const attempt = () => {
+      const p = video.play();
+      if (!p || !p.then) return;
+      p.then(hideCue).catch(showCue);
+    };
+
+    attempt();
+    video.addEventListener("loadeddata", attempt);
+    video.addEventListener("playing", hideCue);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) attempt(); });
+    if (cue) cue.addEventListener("click", () => { video.play().then(hideCue).catch(() => {}); });
+
+    // If the file is missing or undecodable, keep the poster and drop the cue.
+    video.addEventListener("error", () => { video.style.display = "none"; hideCue(); }, true);
   }
 
   /* ---------- Hours ---------------------------------------- */

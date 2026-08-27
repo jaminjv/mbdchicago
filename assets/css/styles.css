@@ -217,6 +217,24 @@ p  { text-wrap: pretty; }
 }
 @keyframes bob { 0%,100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 8px); } }
 
+/* Shown only when the browser refuses to autoplay the banner. */
+.hero__play {
+  /* In the hero copy rather than pinned to a corner: on a tall hero a
+     corner button can sit below the fold, which is exactly the moment
+     it is needed. */
+  align-self: flex-start; margin-top: 2rem; position: relative; z-index: 3;
+  display: flex; align-items: center; gap: .55rem;
+  padding: .6rem 1.1rem .6rem .8rem;
+  background: var(--sunny); color: var(--cocoa);
+  border: 3px solid var(--cocoa); border-radius: 999px;
+  font-weight: 800; font-size: .9rem;
+  box-shadow: 0 5px 0 var(--cocoa);
+  transition: transform .16s cubic-bezier(.34,1.56,.64,1), box-shadow .16s;
+}
+.hero__play[hidden] { display: none; }
+.hero__play:hover { transform: translateY(-3px); box-shadow: 0 8px 0 var(--cocoa); }
+.hero__play svg { width: 20px; height: 20px; }
+
 /* Wavy edge under the hero */
 .wave { display: block; width: 100%; height: clamp(40px, 5vw, 72px); }
 .wave--cream { color: var(--cream); }
