@@ -7,9 +7,10 @@
    attachment, a Claude artifact, a USB stick). The real site is
    still index.html / menu.html / catering.html.
 
+   Output: dist/preview.html (generated — not a source file)
    Usage:  node tools/build-preview.mjs
    ============================================================ */
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
 const read = (p) => readFileSync(new URL("../" + p, import.meta.url), "utf8");
 
@@ -263,5 +264,6 @@ ${patchedMain}
 </script>
 `;
 
-writeFileSync(new URL("../preview.html", import.meta.url), out);
-console.log("preview.html written —", (out.length / 1024).toFixed(0), "KB");
+mkdirSync(new URL("../dist/", import.meta.url), { recursive: true });
+writeFileSync(new URL("../dist/preview.html", import.meta.url), out);
+console.log("dist/preview.html written —", (out.length / 1024).toFixed(0), "KB");

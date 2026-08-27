@@ -14,6 +14,7 @@ assets/
   data/content.js   ← everything you will actually edit
   img/              Logo (SVG, extracted from the brand PDF) + placeholders
   video/            hero.mp4 — the silent banner reel
+dist/preview.html   Generated single-file bundle (see below)
   fonts/            Drop licensed font files here
 ```
 
@@ -175,14 +176,14 @@ on its own.
 
 Safari will not play a `<video>` whose source is a `data:` URI — it wants byte
 ranges, which data: URIs cannot serve — so a naively inlined clip plays in
-Chromium and silently fails on iPad and Mac. `preview.html` therefore ships the
+Chromium and silently fails on iPad and Mac. The bundle therefore ships the
 clip as `data-src` and converts it to a `blob:` URL at load, falling back to
 the data: URI if blob creation is blocked. The deployed site is unaffected: it
 loads the mp4 over plain HTTP like any other asset.
 
 ## The single-file preview
 
-`preview.html` is the whole site bundled into one file — CSS, JavaScript, logo
+`dist/preview.html` is the whole site bundled into one file — CSS, JavaScript, logo
 and placeholder art all inlined, with the three pages turned into hash-routed
 views. It opens straight from the filesystem with no server, which makes it
 easy to email or hand to someone before Pages is live.
@@ -194,6 +195,7 @@ node tools/build-preview.mjs
 ```
 
 It is generated output, not a source file — edit the real pages and rebuild.
+It lives in `dist/` for that reason.
 Two things differ from the deployed site by necessity: the map embed becomes a
 link card (embeds are blocked in sandboxed frames), and the licensed-font
 `@font-face` rules are dropped in favor of the Google Fonts fallbacks.
