@@ -131,6 +131,24 @@ https://jaminjv.github.io/mbdchicago/
 When the real domain is ready, add it under Settings → Pages → Custom domain, and
 update the `<link rel="canonical">` in `index.html`.
 
+## The single-file preview
+
+`preview.html` is the whole site bundled into one file — CSS, JavaScript, logo
+and placeholder art all inlined, with the three pages turned into hash-routed
+views. It opens straight from the filesystem with no server, which makes it
+easy to email or hand to someone before Pages is live.
+
+Rebuild it after any content or style change:
+
+```bash
+node tools/build-preview.mjs
+```
+
+It is generated output, not a source file — edit the real pages and rebuild.
+Two things differ from the deployed site by necessity: the map embed becomes a
+link card (embeds are blocked in sandboxed frames), and the licensed-font
+`@font-face` rules are dropped in favor of the Google Fonts fallbacks.
+
 ## Running it locally
 
 ```bash
