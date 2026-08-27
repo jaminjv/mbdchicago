@@ -13,7 +13,7 @@ assets/
   js/main.js        Rendering + interactions
   data/content.js   ← everything you will actually edit
   img/              Logo (SVG, extracted from the brand PDF) + placeholders
-  video/            Drop hero.mp4 here
+  video/            hero.mp4 — the silent banner reel
   fonts/            Drop licensed font files here
 ```
 
@@ -90,12 +90,11 @@ as a pill.
 
 | # | Item | Where it goes |
 |---|------|---------------|
-| 1 | **Hero video** | Save as `assets/video/hero.mp4` and it takes over automatically — the `<source>` list tries mp4 first. It is cropped to fill the banner, so keep the subject centered. Until then a generated stand-in reel (`hero.webm`) plays. |
-| 2 | **Delivery logos** | Official artwork from each platform's brand kit, if you want it instead of the wordmarks. |
-| 3 | **Chef bio** | The three paragraphs under `const chef` are written as placeholders. Replace with his real history. |
-| 4 | **Menu prices** | Every entry marked `todo: true` was reconstructed from public listings and needs a check against the live Toast menu. See below. |
-| 5 | **Review names** | Quotes are real and pulled from public Google/Yelp listings, attributed generically. Add reviewer first names if you want them shown. |
-| 6 | **Brand fonts** | See below. |
+| 1 | **Delivery logos** | Official artwork from each platform's brand kit, if you want it instead of the wordmarks. |
+| 2 | **Chef bio** | The three paragraphs under `const chef` are written as placeholders. Replace with his real history. |
+| 3 | **Menu prices** | Every entry marked `todo: true` was reconstructed from public listings and needs a check against the live Toast menu. See below. |
+| 4 | **Review names** | Quotes are real and pulled from public Google/Yelp listings, attributed generically. Add reviewer first names if you want them shown. |
+| 5 | **Brand fonts** | See below. |
 
 ### Checking the flagged prices
 
@@ -149,16 +148,22 @@ https://jaminjv.github.io/mbdchicago/
 When the real domain is ready, add it under Settings → Pages → Custom domain, and
 update the `<link rel="canonical">` in `index.html`.
 
-## The stand-in hero reel
+## The banner video
 
-`assets/video/hero.webm` is a generated loop — stylized food illustrations
-drifting through the brand palette — standing in until the real footage lands.
-It is built from `tools/foodloop.html`, captured frame by frame and encoded to
-VP8. It is deliberately plain so it reads as motion behind the headline rather
-than competing with it, and it loops seamlessly at 10 seconds.
+`assets/video/hero.mp4` is the banner reel — 1920x1080, about 12 seconds,
+looping. It is cropped to fill the frame at every screen size, so anything
+important should sit near the middle.
 
-Drop a real `assets/video/hero.mp4` in and it wins automatically; the webm then
-only serves browsers that reject the mp4.
+**It is silent, deliberately and at two levels.** The audio track was removed
+from the file itself, and the `<video>` element stays `muted` with no unmute
+control anywhere in the UI. Muting is also what allows browsers to autoplay it
+at all — an unmuted autoplaying video is blocked.
+
+To replace it, overwrite `hero.mp4` and update `assets/img/hero-poster.jpg`
+with a frame from the new footage (the poster is what shows while the video
+loads, so a mismatch reads as a flicker). If the new file has an audio track,
+either strip it before committing or the `muted` attribute will keep it quiet
+on its own.
 
 ## The single-file preview
 

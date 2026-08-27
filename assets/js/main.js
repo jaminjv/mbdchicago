@@ -24,8 +24,6 @@
     facebook: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12a10 10 0 10-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.2c-1.2 0-1.6.8-1.6 1.6V12h2.7l-.4 2.9h-2.3v7A10 10 0 0022 12z"/></svg>',
     instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>',
     tiktok: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 2h-3v13.2a2.7 2.7 0 11-2.2-2.6V9.5a5.9 5.9 0 105.2 5.8V9a7 7 0 004.1 1.3V7.2a4.1 4.1 0 01-4.1-4.1V2z"/></svg>',
-    volumeOn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7M18.5 5.5a9 9 0 010 13"/></svg>',
-    volumeOff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M22 9l-6 6M16 9l6 6"/></svg>',
     burger: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
     close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>'
   };
@@ -52,27 +50,18 @@
     mq.addEventListener("change", (e) => { if (e.matches) setOpen(false); });
   }
 
-  /* ---------- Hero video ----------------------------------- */
+  /* ---------- Hero video -----------------------------------
+     The banner is silent on purpose: the source file carries no
+     audio track and the element stays muted, which is also what
+     lets it autoplay at all. */
   function initHero() {
     const video = $(".hero__media video");
-    const toggle = $(".hero__sound");
     if (!video) return;
-
-    // Autoplay needs muted; the toggle lets people opt into sound.
     video.muted = true;
     const play = video.play();
     if (play && play.catch) play.catch(() => {});
-
-    // If the source is missing or fails, fall back to the poster image.
+    // If the file is missing or undecodable, fall back to the poster.
     video.addEventListener("error", () => { video.style.display = "none"; }, true);
-
-    if (!toggle) return;
-    const sync = () => {
-      toggle.innerHTML = video.muted ? icon.volumeOff : icon.volumeOn;
-      toggle.setAttribute("aria-label", video.muted ? "Unmute background video" : "Mute background video");
-    };
-    sync();
-    toggle.addEventListener("click", () => { video.muted = !video.muted; if (!video.muted) video.play(); sync(); });
   }
 
   /* ---------- Hours ---------------------------------------- */

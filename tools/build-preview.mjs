@@ -70,11 +70,10 @@ const routeLinks = (s) => s
 
 for (const k of Object.keys(views)) views[k] = routeLinks(views[k]);
 
-/* Poster and reel are inlined so the bundle stays a single file. */
+/* Poster and banner video are inlined so the bundle stays a single file. */
 views.home = views.home
   .replace(/poster="assets\/img\/hero-poster\.jpg"/, `poster="${b64("assets/img/hero-poster.jpg")}"`)
-  .replace(/\s*<source src="assets\/video\/hero\.mp4" type="video\/mp4">/, "")
-  .replace(/src="assets\/video\/hero\.webm"/, `src="${b64("assets/video/hero.webm")}"`);
+  .replace(/src="assets\/video\/hero\.mp4"/, `src="${b64("assets/video/hero.mp4")}"`);
 
 /* Section ids must stay unique once all three views share a document. */
 views.menu = views.menu.replace(/id="catering-menu"/g, 'id="catering-menu-nav"');

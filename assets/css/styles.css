@@ -189,9 +189,11 @@ p  { text-wrap: pretty; }
 .hero__media video, .hero__media img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
 .hero__media::after {
   content: ""; position: absolute; inset: 0;
+  /* Dark enough on the left to carry the headline, open on the right
+     so the food in the banner actually reads. */
   background:
-    linear-gradient(to top, rgba(48,34,29,.94) 4%, rgba(48,34,29,.5) 45%, rgba(48,34,29,.66) 100%),
-    linear-gradient(to right, rgba(48,34,29,.8), rgba(48,34,29,.12) 65%);
+    linear-gradient(to top, rgba(48,34,29,.92) 2%, rgba(48,34,29,.34) 44%, rgba(48,34,29,.48) 100%),
+    linear-gradient(to right, rgba(48,34,29,.88) 0%, rgba(48,34,29,.52) 36%, rgba(48,34,29,.06) 74%);
 }
 .hero__inner {
   position: relative;
@@ -214,16 +216,6 @@ p  { text-wrap: pretty; }
   animation: bob 2.4s ease-in-out infinite;
 }
 @keyframes bob { 0%,100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 8px); } }
-
-/* Sound toggle for the hero video */
-.hero__sound {
-  position: absolute; right: var(--gutter); bottom: 1.6rem; z-index: 2;
-  width: 46px; height: 46px; display: grid; place-items: center;
-  border-radius: 50%; border: 2px solid rgba(255,255,255,.45); color: var(--white);
-  background: rgba(48,34,29,.5); backdrop-filter: blur(6px); transition: .2s;
-}
-.hero__sound:hover { background: var(--sunny); color: var(--cocoa); border-color: var(--sunny); }
-.hero__sound svg { width: 20px; height: 20px; }
 
 /* Wavy edge under the hero */
 .wave { display: block; width: 100%; height: clamp(40px, 5vw, 72px); }
