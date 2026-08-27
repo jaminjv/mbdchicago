@@ -92,31 +92,28 @@ window.MBD = (function () {
     {
       badge: "This week's headliner",
       name: "Berries & Nutella Crepes",
-      desc: "Two golden crepes rolled with mascarpone, layered with strawberries, blueberries and blackberries, ribboned with Nutella and raspberry coulis, finished with fresh whipped cream and powdered sugar.",
+      desc: "Crepes rolled and ribboned with Nutella and raspberry coulis, piled with strawberries, blueberries and blackberries, finished with fresh whipped cream and powdered sugar.",
       price: "$16.95",
-      img: "assets/img/special-1.svg",
-      photoPending: true,
-      alt: "Crepes with berries, Nutella and whipped cream on a white plate",
+      img: "assets/img/special-berries-crepes.jpg",
+      alt: "Crepes drizzled with Nutella and raspberry sauce, topped with whipped cream, blackberries and blueberries, surrounded by fresh berries",
       todo: true
     },
     {
       badge: "Fan favorite",
-      name: "Waffle Breakfast Stack",
-      desc: "Cheddar-buttermilk waffles stacked with scrambled eggs, bacon and hash browns, served with our house-roasted breakfast potatoes.",
+      name: "Waffle Breakfast",
+      desc: "Cheddar-buttermilk waffles stacked around scrambled eggs, bacon and hash browns, served with our house-roasted breakfast potatoes and fresh orange.",
       price: "$15.75",
-      img: "assets/img/special-2.svg",
-      photoPending: true,
-      alt: "Waffle breakfast sandwich stacked with eggs and bacon, with roasted potatoes",
+      img: "assets/img/special-waffle-breakfast.jpg",
+      alt: "Waffle sandwich stacked with scrambled eggs and bacon, served with roasted breakfast potatoes and an orange slice",
       todo: true
     },
     {
       badge: "Chef's pick",
-      name: "Avocado Waffle Benedict",
-      desc: "A savory waffle base with avocado, roasted tomato and crisp bacon, topped with two eggs any style and a balsamic drizzle.",
+      name: "Avocado Waffle",
+      desc: "Sliced avocado over a golden waffle base, loaded with house chorizo and roasted peppers, finished with a crema drizzle.",
       price: "$16.50",
-      img: "assets/img/special-3.svg",
-      photoPending: true,
-      alt: "Savory waffle topped with avocado, bacon and two fried eggs with balsamic drizzle",
+      img: "assets/img/special-avocado-waffle.jpg",
+      alt: "Open-faced waffle topped with sliced avocado, chorizo and roasted peppers under a crema drizzle, with avocado halves alongside",
       todo: true
     }
   ];
@@ -125,8 +122,7 @@ window.MBD = (function () {
   const chef = {
     name: "Efrain de Paz",
     role: "Chef & Owner",
-    photo: "assets/img/placeholder-chef.svg",
-    photoPending: true,
+    photo: "assets/img/chef.jpg",
     quote: "Breakfast should never be boring. Every plate that leaves my kitchen has something on it that makes you look twice.",
     bio: [
       "Efrain de Paz grew up cooking the way most cooks worth knowing did — beside family, at the stove, long before it was a job. He brought that instinct to Chicago kitchens and spent years working the line before deciding that the meal he cared about most was the one nobody was taking seriously enough.",

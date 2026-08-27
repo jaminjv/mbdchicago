@@ -9,11 +9,19 @@
 
    Usage:  node tools/build-preview.mjs
    ============================================================ */
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 
 const read = (p) => readFileSync(new URL("../" + p, import.meta.url), "utf8");
-const dataUri = (p) =>
-  "data:image/svg+xml;base64," + Buffer.from(read(p), "utf8").toString("base64");
+
+const MIME = { svg: "image/svg+xml", jpg: "image/jpeg", jpeg: "image/jpeg",
+               png: "image/png", webm: "video/webm", mp4: "video/mp4" };
+const b64 = (p) => {
+  const ext = p.split(".").pop().toLowerCase();
+  const mime = MIME[ext];
+  if (!mime) throw new Error(`no mime type known for ${p}`);
+  return `data:${mime};base64,` +
+    readFileSync(new URL("../" + p, import.meta.url)).toString("base64");
+};
 
 /* ---- Pull the body of each page, minus the shared chrome ---- */
 function viewBody(file) {
@@ -63,12 +71,10 @@ const routeLinks = (s) => s
 for (const k of Object.keys(views)) views[k] = routeLinks(views[k]);
 
 /* Poster and reel are inlined so the bundle stays a single file. */
-const b64 = (p, mime) =>
-  `data:${mime};base64,` + readFileSync(new URL("../" + p, import.meta.url)).toString("base64");
 views.home = views.home
-  .replace(/poster="assets\/img\/hero-poster\.jpg"/, `poster="${b64("assets/img/hero-poster.jpg", "image/jpeg")}"`)
+  .replace(/poster="assets\/img\/hero-poster\.jpg"/, `poster="${b64("assets/img/hero-poster.jpg")}"`)
   .replace(/\s*<source src="assets\/video\/hero\.mp4" type="video\/mp4">/, "")
-  .replace(/src="assets\/video\/hero\.webm"/, `src="${b64("assets/video/hero.webm", "video/webm")}"`);
+  .replace(/src="assets\/video\/hero\.webm"/, `src="${b64("assets/video/hero.webm")}"`);
 
 /* Section ids must stay unique once all three views share a document. */
 views.menu = views.menu.replace(/id="catering-menu"/g, 'id="catering-menu-nav"');
@@ -95,12 +101,13 @@ const footer = routeLinks(read("index.html")
   .replace(/<img class="footer__logo"[^>]*>/,
     `<svg class="footer__logo" role="img" aria-label="Morning Breakfast Delight"><use href="#mbd-logo"/></svg>`);
 
-/* ---- Inline the placeholder art --------------------------- */
-const patchedData = data
-  .replace(/"assets\/img\/special-1\.svg"/, `"${dataUri("assets/img/special-1.svg")}"`)
-  .replace(/"assets\/img\/special-2\.svg"/, `"${dataUri("assets/img/special-2.svg")}"`)
-  .replace(/"assets\/img\/special-3\.svg"/, `"${dataUri("assets/img/special-3.svg")}"`)
-  .replace(/"assets\/img\/placeholder-chef\.svg"/, `"${dataUri("assets/img/placeholder-chef.svg")}"`);
+/* ---- Inline every image the content file points at ---------
+   Paths that do not resolve are left alone: the content file also
+   carries example paths inside comments. */
+const patchedData = data.replace(
+  /"(assets\/img\/[^"]+\.(?:svg|jpe?g|png))"/g,
+  (whole, path) =>
+    existsSync(new URL("../" + path, import.meta.url)) ? `"${b64(path)}"` : whole);
 
 /* The map embed is blocked in a sandboxed frame, so it becomes a link card. */
 const patchedMain = main.replace(

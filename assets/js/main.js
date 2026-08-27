@@ -149,8 +149,7 @@
     const c = D.chef;
     host.innerHTML = `
       <figure class="chef__figure reveal">
-        <img src="${esc(c.photo)}" alt="${esc(c.name)}, ${esc(c.role)} at Morning Breakfast Delight" loading="lazy"
-             onerror="this.src='assets/img/placeholder-chef.svg'">
+        <img src="${esc(c.photo)}" alt="${esc(c.name)}, ${esc(c.role)} at Morning Breakfast Delight" loading="lazy">
         ${c.photoPending ? '<span class="photo-chip">Photo pending</span>' : ""}
         <div class="chef__stamp" aria-hidden="true"><b>MBD</b><small>Since day one</small></div>
       </figure>

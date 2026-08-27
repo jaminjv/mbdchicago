@@ -35,14 +35,18 @@ wide tile, the other two sit side by side beneath it.
   name:  "Berries & Nutella Crepes",
   desc:  "Two golden crepes rolled with mascarpone…",
   price: "$16.95",
-  img:   "assets/img/special-1.jpg",
-  alt:   "Crepes with berries and Nutella",   // describes the photo for screen readers
-  photoPending: true                          // delete this line once the real photo is in
+  img:   "assets/img/special-berries-crepes.jpg",
+  alt:   "Crepes with berries and Nutella"   // describes the photo for screen readers
 }
 ```
 
-To swap a photo: drop the file into `assets/img/`, point `img` at it, and delete
-the `photoPending: true` line. Landscape images around 1600px wide work best.
+To swap a photo: drop the file into `assets/img/` and point `img` at it.
+Landscape images around 1400–1600px wide work best; they are cropped to fill,
+so keep the plate near the middle.
+
+Add `photoPending: true` to any special still waiting on its photo and the tile
+shows a small "Photo pending" chip — useful while a week's shots are in
+progress. All three currently have real photography, so none carry the flag.
 
 ### The delivery platform tiles
 
@@ -87,13 +91,11 @@ as a pill.
 | # | Item | Where it goes |
 |---|------|---------------|
 | 1 | **Hero video** | Save as `assets/video/hero.mp4` and it takes over automatically — the `<source>` list tries mp4 first. It is cropped to fill the banner, so keep the subject centered. Until then a generated stand-in reel (`hero.webm`) plays. |
-| 2 | **Food photography** | `assets/img/` — three weekly specials, plus an `og-cover.jpg` for link previews. |
-| 2b | **Delivery logos** | Official artwork from each platform's brand kit, if you want it instead of the wordmarks. |
-| 3 | **Chef photo** | `assets/img/chef.jpg`, then update `chef.photo` and drop `photoPending`. |
-| 4 | **Chef bio** | The three paragraphs under `const chef` are written as placeholders. Replace with his real history. |
-| 5 | **Menu prices** | Every entry marked `todo: true` was reconstructed from public listings and needs a check against the live Toast menu. See below. |
-| 6 | **Review names** | Quotes are real and pulled from public Google/Yelp listings, attributed generically. Add reviewer first names if you want them shown. |
-| 7 | **Brand fonts** | See below. |
+| 2 | **Delivery logos** | Official artwork from each platform's brand kit, if you want it instead of the wordmarks. |
+| 3 | **Chef bio** | The three paragraphs under `const chef` are written as placeholders. Replace with his real history. |
+| 4 | **Menu prices** | Every entry marked `todo: true` was reconstructed from public listings and needs a check against the live Toast menu. See below. |
+| 5 | **Review names** | Quotes are real and pulled from public Google/Yelp listings, attributed generically. Add reviewer first names if you want them shown. |
+| 6 | **Brand fonts** | See below. |
 
 ### Checking the flagged prices
 
