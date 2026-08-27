@@ -242,28 +242,35 @@ p  { text-wrap: pretty; }
 .strip__item strong { font-size: 1.15rem; font-weight: 800; }
 .strip__item span { font-size: .82rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; opacity: .68; }
 
-/* --- Order platforms --------------------------------------------- */
-.orders { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; }
-.order-card {
-  position: relative;
-  background: var(--white); border: 3px solid var(--cocoa); border-radius: var(--r-lg);
-  padding: 2rem 1.4rem 1.6rem; text-align: center;
-  display: flex; flex-direction: column; align-items: center; gap: .9rem;
-  box-shadow: 0 8px 0 var(--cocoa);
-  transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s;
+/* --- Order platforms: small logo tiles --------------------------- */
+.orders {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: clamp(.8rem, 2vw, 1.4rem);
 }
-.order-card--live:hover { transform: translateY(-6px) rotate(-1deg); box-shadow: 0 14px 0 var(--cocoa); }
-.order-card--soon { opacity: .62; box-shadow: 0 8px 0 #d9c9b6; border-color: #d9c9b6; }
-.order-card__logo { height: 40px; display: grid; place-items: center; }
-.order-card__logo svg { height: 34px; width: auto; }
-.order-card__name { font-weight: 800; font-size: 1.12rem; }
-.order-card__note { font-size: .84rem; color: var(--ink-muted); min-height: 2.4em; }
-.order-card .btn { width: 100%; }
-.tag-live {
-  position: absolute; top: -14px; left: 50%; translate: -50% 0;
-  background: var(--cocoa); color: var(--sunny);
-  font-size: .68rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
-  padding: .3rem .85rem; border-radius: 999px;
+.order-tile {
+  display: flex; flex-direction: column; align-items: center; gap: .55rem;
+  width: clamp(104px, 13vw, 132px);
+  transition: transform .18s cubic-bezier(.34,1.56,.64,1);
+}
+.order-tile:hover { transform: translateY(-5px); }
+.order-tile__face {
+  width: 100%; aspect-ratio: 1;
+  display: grid; place-items: center; padding: .55rem;
+  background: var(--brand); color: var(--brand-fg);
+  border: 3px solid var(--cocoa); border-radius: var(--r-md);
+  box-shadow: 0 5px 0 var(--cocoa);
+  transition: box-shadow .18s;
+}
+.order-tile:hover .order-tile__face { box-shadow: 0 9px 0 var(--cocoa); }
+.order-tile:active .order-tile__face { box-shadow: 0 2px 0 var(--cocoa); }
+.order-tile__wordmark {
+  font-weight: 800; font-size: clamp(.82rem, 1.5vw, .98rem);
+  letter-spacing: -.02em; line-height: 1.05; text-align: center; text-wrap: balance;
+}
+.order-tile__face img { width: 100%; height: 100%; object-fit: contain; }
+.order-tile__note {
+  font-size: .74rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--ink-muted); text-align: center; text-wrap: balance;
 }
 
 /* --- Specials ---------------------------------------------------- */

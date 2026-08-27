@@ -110,21 +110,17 @@
     const grid = $("[data-ordering]");
     if (!grid) return;
     grid.innerHTML = D.ordering.map((p) => {
-      const live = Boolean(p.url);
+      const art = p.logo
+        ? `<img src="${esc(p.logo)}" alt="${esc(p.name)}">`
+        : `<span class="order-tile__wordmark">${esc(p.wordmark || p.name)}</span>`;
       return `
-        <article class="order-card ${live ? "order-card--live" : "order-card--soon"} reveal">
-          ${live ? '<span class="tag-live">Available now</span>' : ""}
-          <div class="order-card__logo" aria-hidden="true">
-            <svg viewBox="0 0 34 34"><circle cx="17" cy="17" r="16" fill="${live ? "#30221d" : "#d9c9b6"}"/>
-            <text x="17" y="23" text-anchor="middle" font-family="system-ui,sans-serif" font-size="16" font-weight="700"
-              fill="${live ? "#fdb100" : "#fffaf1"}">${esc(p.name[0])}</text></svg>
-          </div>
-          <h3 class="order-card__name">${esc(p.name)}</h3>
-          <p class="order-card__note">${esc(p.note)}</p>
-          ${live
-            ? `<a class="btn btn--sm" href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.cta)} ${icon.ext}</a>`
-            : `<span class="btn btn--sm" aria-disabled="true">Coming soon</span>`}
-        </article>`;
+        <a class="order-tile" href="${esc(p.url)}" target="_blank" rel="noopener"
+           style="--brand:${esc(p.brand)};--brand-fg:${esc(p.fg)}"
+           title="${esc(p.name)}${p.searchOnly ? " — opens a search on their app" : ""}">
+          <span class="order-tile__face">${art}</span>
+          <span class="order-tile__note">${esc(p.note)}</span>
+          <span class="sr-only">Order from ${esc(p.name)}</span>
+        </a>`;
     }).join("");
   }
 

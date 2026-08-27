@@ -37,20 +37,44 @@ window.MBD = (function () {
     ]
   };
 
-  /* ---- Ordering platforms --------------------------------- */
-  /* Paste a URL into `url` and the card goes live automatically. */
+  /* ---- Ordering platforms ---------------------------------
+     Rendered as small logo tiles. `url` is where the tile links.
+     Toast and Grubhub point at the restaurant's real store pages;
+     the other three point at that platform's search until the
+     store links exist — paste them in and nothing else changes.
+     `brand` is the tile color, `wordmark` the text drawn on it.
+     To use a platform's official artwork instead, add
+     `logo: "assets/img/order-<name>.svg"` and it takes over.
+  ---------------------------------------------------------- */
   const ordering = [
     {
-      key: "toast",
-      name: "Toast",
-      note: "Order direct — the kitchen sees it first.",
-      url: "https://earlymorningdelight.toast.site/order/early-morning-delight-1924-w-irving-park-rd",
-      cta: "Order Direct"
+      key: "toast", name: "Toast", wordmark: "Toast", brand: "#ff4c00", fg: "#ffffff",
+      note: "Order direct",
+      url: "https://earlymorningdelight.toast.site/order/early-morning-delight-1924-w-irving-park-rd"
     },
-    { key: "doordash", name: "DoorDash",  note: "Delivery across the North Side.", url: "", cta: "Order on DoorDash" },
-    { key: "ubereats", name: "Uber Eats", note: "Fast delivery to your door.",     url: "", cta: "Order on Uber Eats" },
-    { key: "postmates", name: "Postmates", note: "Another way to get us delivered.", url: "", cta: "Order on Postmates" },
-    { key: "grubhub",  name: "Grubhub",   note: "Pickup or delivery, your call.",  url: "", cta: "Order on Grubhub" }
+    {
+      key: "doordash", name: "DoorDash", wordmark: "DoorDash", brand: "#ff3008", fg: "#ffffff",
+      note: "Delivery",
+      url: "https://www.doordash.com/search/store/Morning%20Breakfast%20Delight%20Chicago",
+      searchOnly: true
+    },
+    {
+      key: "ubereats", name: "Uber Eats", wordmark: "Uber Eats", brand: "#06c167", fg: "#0b1b12",
+      note: "Delivery",
+      url: "https://www.ubereats.com/search?q=Morning%20Breakfast%20Delight",
+      searchOnly: true
+    },
+    {
+      key: "postmates", name: "Postmates", wordmark: "Postmates", brand: "#ffee00", fg: "#161616",
+      note: "Delivery",
+      url: "https://postmates.com/search?q=Morning%20Breakfast%20Delight",
+      searchOnly: true
+    },
+    {
+      key: "grubhub", name: "Grubhub", wordmark: "Grubhub", brand: "#f63440", fg: "#ffffff",
+      note: "Delivery",
+      url: "https://www.grubhub.com/restaurant/early-morning-delight-1924-w-irving-park-rd-chicago/5645664"
+    }
   ];
 
   /* ---- Social --------------------------------------------- */

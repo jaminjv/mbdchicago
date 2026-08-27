@@ -31,10 +31,20 @@ const css = read("assets/css/styles.css")
 const data = read("assets/data/content.js");
 const main = read("assets/js/main.js");
 
-/* The logo is 31 KB of paths, so it goes in once as a <symbol>. */
-const logoSvg = read("assets/img/logo.svg");
-const logoInner = logoSvg.replace(/^[\s\S]*?<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "");
-const logoViewBox = logoSvg.match(/viewBox="([^"]+)"/)[1];
+/* The marks are tens of KB of paths, so each goes in once as a <symbol>
+   and every use point references it. A <use> of a <symbol> already
+   applies the symbol's viewBox, so the referencing <svg> must NOT
+   repeat it — doing so scales the art twice and crops it. Size comes
+   from CSS width + aspect-ratio instead. */
+function symbolOf(file, id) {
+  const svg = read(file);
+  const viewBox = svg.match(/viewBox="([^"]+)"/)[1];
+  const inner = svg.replace(/^[\s\S]*?<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "");
+  const [, , w, h] = viewBox.split(/\s+/).map(Number);
+  return { id, viewBox, inner, ratio: (w / h).toFixed(4) };
+}
+const wordmark = symbolOf("assets/img/logo.svg", "mbd-logo");      // full script lockup
+const monogram = symbolOf("assets/img/logo-mark.svg", "mbd-mark"); // MBD initials
 
 let views = {
   home: viewBody("index.html"),
@@ -52,17 +62,20 @@ const routeLinks = (s) => s
 
 for (const k of Object.keys(views)) views[k] = routeLinks(views[k]);
 
-/* No video ships with the bundle, so the hero shows its inlined poster. */
+/* Poster and reel are inlined so the bundle stays a single file. */
+const b64 = (p, mime) =>
+  `data:${mime};base64,` + readFileSync(new URL("../" + p, import.meta.url)).toString("base64");
 views.home = views.home
-  .replace(/poster="assets\/img\/hero-poster\.svg"/, `poster="${dataUri("assets/img/hero-poster.svg")}"`)
-  .replace(/\s*<source src="assets\/video\/hero\.mp4" type="video\/mp4">/, "");
+  .replace(/poster="assets\/img\/hero-poster\.jpg"/, `poster="${b64("assets/img/hero-poster.jpg", "image/jpeg")}"`)
+  .replace(/\s*<source src="assets\/video\/hero\.mp4" type="video\/mp4">/, "")
+  .replace(/src="assets\/video\/hero\.webm"/, `src="${b64("assets/video/hero.webm", "video/webm")}"`);
 
 /* Section ids must stay unique once all three views share a document. */
 views.menu = views.menu.replace(/id="catering-menu"/g, 'id="catering-menu-nav"');
 
 const nav = routeLinks(`
     <a class="nav__logo" href="./" aria-label="Morning Breakfast Delight — home">
-      <svg class="nav__logo-mark" viewBox="${logoViewBox}" role="img" aria-label="Morning Breakfast Delight"><use href="#mbd-logo"/></svg>
+      <svg class="nav__logo-mark" role="img" aria-label="Morning Breakfast Delight"><use href="#mbd-mark"/></svg>
     </a>
     <button class="nav__burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="primary-nav"></button>
     <nav class="nav__links" id="primary-nav" aria-label="Primary">
@@ -80,7 +93,7 @@ const footer = routeLinks(read("index.html")
   .replace(/<script[\s\S]*$/, "")
   .replace(/<\/body>[\s\S]*$/, ""))
   .replace(/<img class="footer__logo"[^>]*>/,
-    `<svg class="footer__logo" viewBox="${logoViewBox}" role="img" aria-label="Morning Breakfast Delight"><use href="#mbd-logo"/></svg>`);
+    `<svg class="footer__logo" role="img" aria-label="Morning Breakfast Delight"><use href="#mbd-logo"/></svg>`);
 
 /* ---- Inline the placeholder art --------------------------- */
 const patchedData = data
@@ -106,8 +119,8 @@ ${css}
 /* --- Preview shell: three pages as hash-routed views -------- */
 .view { display: none; }
 .view.is-active { display: block; }
-.nav__logo-mark { height: clamp(44px, 5.4vw, 58px); width: auto; }
-.footer__logo { width: 190px; height: auto; margin-bottom: 1.2rem; }
+.nav__logo-mark { height: clamp(46px, 5.6vw, 60px); aspect-ratio: ${monogram.ratio}; width: auto; }
+.footer__logo { width: 190px; height: auto; aspect-ratio: ${wordmark.ratio}; margin-bottom: 1.2rem; }
 .map-card {
   display: flex; flex-direction: column; gap: 1rem;
   padding: clamp(1.6rem, 4vw, 2.4rem);
@@ -120,7 +133,8 @@ ${css}
 </style>
 
 <svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false">
-  <symbol id="mbd-logo" viewBox="${logoViewBox}">${logoInner}</symbol>
+  <symbol id="${wordmark.id}" viewBox="${wordmark.viewBox}">${wordmark.inner}</symbol>
+  <symbol id="${monogram.id}" viewBox="${monogram.viewBox}">${monogram.inner}</symbol>
 </svg>
 
 <div class="ticker" aria-hidden="true">

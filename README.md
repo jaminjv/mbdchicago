@@ -44,17 +44,32 @@ wide tile, the other two sit side by side beneath it.
 To swap a photo: drop the file into `assets/img/`, point `img` at it, and delete
 the `photoPending: true` line. Landscape images around 1600px wide work best.
 
-### Turning on the delivery platforms
+### The delivery platform tiles
 
-DoorDash, Uber Eats, Postmates and Grubhub are built and waiting. Each card
-switches from *Coming soon* to a live button the moment you paste a URL:
+`const ordering` renders a row of small logo tiles, each linking out to that
+platform. Toast and Grubhub point at the restaurant's real store pages. The
+other three carry `searchOnly: true` — they open a search on that app because
+the store link is not known yet. Replace `url` with the real store page and
+delete the flag:
 
 ```js
-{ key: "doordash", name: "DoorDash", note: "…", url: "", cta: "Order on DoorDash" }
-//                                             ^^ paste the link here
+{ key: "doordash", name: "DoorDash", wordmark: "DoorDash",
+  brand: "#ff3008", fg: "#ffffff", note: "Delivery",
+  url: "…", searchOnly: true }
 ```
 
-TikTok works the same way — see `const social`.
+Each tile currently draws the platform's name as a wordmark in its brand color
+rather than its official logo, since those are trademarked artwork we do not
+have licensed copies of. To use the real thing, download the asset from that
+platform's brand or press kit, drop it in `assets/img/`, and add a `logo` key —
+it replaces the wordmark with no other changes:
+
+```js
+{ key: "doordash", …, logo: "assets/img/order-doordash.svg" }
+```
+
+TikTok works like the old ordering cards — see `const social`; it stays a
+disabled button until you paste a URL.
 
 ### Menu and prices
 
@@ -71,8 +86,9 @@ as a pill.
 
 | # | Item | Where it goes |
 |---|------|---------------|
-| 1 | **Hero video** | Save as `assets/video/hero.mp4`. It is cropped to fill the banner, so keep the subject centered. An `.webm` alongside it is a nice extra. A branded still shows until the file exists. |
+| 1 | **Hero video** | Save as `assets/video/hero.mp4` and it takes over automatically — the `<source>` list tries mp4 first. It is cropped to fill the banner, so keep the subject centered. Until then a generated stand-in reel (`hero.webm`) plays. |
 | 2 | **Food photography** | `assets/img/` — three weekly specials, plus an `og-cover.jpg` for link previews. |
+| 2b | **Delivery logos** | Official artwork from each platform's brand kit, if you want it instead of the wordmarks. |
 | 3 | **Chef photo** | `assets/img/chef.jpg`, then update `chef.photo` and drop `photoPending`. |
 | 4 | **Chef bio** | The three paragraphs under `const chef` are written as placeholders. Replace with his real history. |
 | 5 | **Menu prices** | Every entry marked `todo: true` was reconstructed from public listings and needs a check against the live Toast menu. See below. |
@@ -130,6 +146,17 @@ https://jaminjv.github.io/mbdchicago/
 
 When the real domain is ready, add it under Settings → Pages → Custom domain, and
 update the `<link rel="canonical">` in `index.html`.
+
+## The stand-in hero reel
+
+`assets/video/hero.webm` is a generated loop — stylized food illustrations
+drifting through the brand palette — standing in until the real footage lands.
+It is built from `tools/foodloop.html`, captured frame by frame and encoded to
+VP8. It is deliberately plain so it reads as motion behind the headline rather
+than competing with it, and it loops seamlessly at 10 seconds.
+
+Drop a real `assets/video/hero.mp4` in and it wins automatically; the webm then
+only serves browsers that reject the mp4.
 
 ## The single-file preview
 

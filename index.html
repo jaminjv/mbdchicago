@@ -49,7 +49,7 @@
 <header class="nav">
   <div class="wrap nav__inner">
     <a class="nav__logo" href="./" aria-label="Morning Breakfast Delight — home">
-      <img src="assets/img/logo.svg" alt="Morning Breakfast Delight" width="168" height="140">
+      <img src="assets/img/logo-mark.svg" alt="Morning Breakfast Delight" width="120" height="122">
     </a>
     <button class="nav__burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="primary-nav"></button>
     <nav class="nav__links" id="primary-nav" aria-label="Primary">
@@ -67,8 +67,11 @@
 <!-- ================= HERO ================= -->
 <section class="hero">
   <div class="hero__media">
-    <video autoplay muted loop playsinline preload="metadata" poster="assets/img/hero-poster.svg">
+    <video autoplay muted loop playsinline preload="metadata" poster="assets/img/hero-poster.jpg">
+      <!-- hero.mp4 is listed first so dropping a real file in takes over automatically.
+           hero.webm is the generated stand-in reel. -->
       <source src="assets/video/hero.mp4" type="video/mp4">
+      <source src="assets/video/hero.webm" type="video/webm">
     </video>
   </div>
   <div class="wrap hero__inner">
@@ -114,8 +117,8 @@
       <span class="eyebrow">Order Now</span>
       <h2>Breakfast, <span class="script">delivered.</span></h2>
       <p class="lead" style="margin-inline:auto">
-        Order straight from our kitchen on Toast, or grab us on your favorite delivery app.
-        More platforms are switching on soon.
+        Order straight from our kitchen on Toast — that one comes to us first —
+        or grab us on whichever delivery app you already have open.
       </p>
     </header>
     <div class="orders" data-ordering></div>
