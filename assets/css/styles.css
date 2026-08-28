@@ -4,10 +4,14 @@
    ============================================================ */
 
 /* --- Brand fonts -------------------------------------------------
-   Nexa Script is served from this repo, so it renders the same on
-   every device with nothing to fetch from a third party.
-   Google Sans Flex is still missing — drop the file in and it takes
-   over on its own; until then the stack falls back to Outfit.
+   Both faces are served from this repo, so the page carries its own
+   type and renders the same on every device with nothing fetched from
+   a third party.
+
+   Google Sans Flex ships as a six-axis variable font (4.2 MB). Only
+   weight varies here, so the other axes are pinned — optical size at
+   the 24pt text grade — which takes the woff2 from 1.9 MB to 92 KB.
+   Licensed under the OFL; see GoogleSansFlex-OFL.txt.
 ------------------------------------------------------------------ */
 @font-face {
   font-family: "Nexa Script";
@@ -17,8 +21,8 @@
 }
 @font-face {
   font-family: "Google Sans Flex";
-  src: url("../fonts/google-sans-flex.woff2") format("woff2-variations");
-  font-weight: 100 900;
+  src: url("../fonts/google-sans-flex.woff2") format("woff2");
+  font-weight: 1 1000;
   font-display: swap;
 }
 

@@ -113,9 +113,26 @@ converted from the supplied OTF (38 KB → 23 KB), with the OTF kept alongside a
 fallback source. Nothing is fetched from a third party for the display face, so it
 renders identically on every device.
 
-**Google Sans Flex** (the wordmark font, confirmed from the brand PDF) is still
-missing; the body text falls back to **Outfit** from Google Fonts, which is close
-in feel. Drop the file in and it takes over on its own.
+**Google Sans Flex** is in the repo too. It ships as a six-axis variable font
+(4.2 MB); only weight varies in this design, so the other axes are pinned —
+optical size at the 24pt text grade — which takes the woff2 from 1.9 MB to 92 KB.
+Licensed under the OFL, included as `GoogleSansFlex-OFL.txt`.
+
+With both faces local, **the pages request nothing from a third party**. That is
+the durable fix for type looking different on an iPad than on a desktop.
+
+#### Nexa Script Free has no capital letters
+
+The supplied file is the *Free* cut, and 25 of its 26 uppercase glyphs are
+byte-identical to their lowercase counterparts — `G` draws the same outline as
+`g`, `M` the same as `m`. Setting a capital in the markup therefore changes
+nothing on screen, whatever the text says.
+
+The headings are written in proper title case anyway (`Good Morning,`), which is
+right for screen readers, for search results, and for the day the full font
+arrives — capitals will appear on their own with no code change. The brand PDF's
+lockup does show real capitals, so the logo artwork was set in the full
+commercial version.
 
 ### Why the type can differ between an iPad and a desktop
 
