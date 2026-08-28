@@ -191,8 +191,15 @@ easy to email or hand to someone before Pages is live.
 Rebuild it after any content or style change:
 
 ```bash
-node tools/build-preview.mjs
+node tools/build-preview.mjs             # with the banner video inlined (~6.5 MB)
+node tools/build-preview.mjs --no-video  # poster frame only (~1.8 MB)
 ```
+
+The base64 video is by far the largest thing in the bundle — about 4.8 MB of
+the 6.5 — and a page that heavy is slow to open and has failed to publish
+outright. Prefer `--no-video` for anything you send to someone: the hero keeps
+its poster, which is a real frame of the footage, so the composition reads the
+same, just still. The deployed site always has the moving version.
 
 It is generated output, not a source file — edit the real pages and rebuild.
 It lives in `dist/` for that reason.

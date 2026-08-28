@@ -72,13 +72,17 @@ const routeLinks = (s) => s
 for (const k of Object.keys(views)) views[k] = routeLinks(views[k]);
 
 /* Poster and banner video are inlined so the bundle stays a single file.
+   --no-video omits the clip and leaves the poster frame in its place:
+   the base64 video is by far the largest thing in the bundle, and a
+   multi-megabyte page is slow to open and can fail to publish at all.
    The video is handed over as data-src rather than src: Safari refuses to
    play a <video> from a data: URI (it wants byte ranges, which data: URIs
    cannot serve), so the page converts it to a blob: URL at runtime. */
+const withVideo = !process.argv.includes("--no-video");
 views.home = views.home
   .replace(/poster="assets\/img\/hero-poster\.jpg"/, `poster="${b64("assets/img/hero-poster.jpg")}"`)
   .replace(/<source src="assets\/video\/hero\.mp4" type="video\/mp4">/,
-           `<source data-src="${b64("assets/video/hero.mp4")}" type="video/mp4">`);
+           withVideo ? `<source data-src="${b64("assets/video/hero.mp4")}" type="video/mp4">` : "");
 
 /* Section ids must stay unique once all three views share a document. */
 views.menu = views.menu.replace(/id="catering-menu"/g, 'id="catering-menu-nav"');
@@ -266,4 +270,5 @@ ${patchedMain}
 
 mkdirSync(new URL("../dist/", import.meta.url), { recursive: true });
 writeFileSync(new URL("../dist/preview.html", import.meta.url), out);
-console.log("dist/preview.html written —", (out.length / 1024).toFixed(0), "KB");
+console.log(`dist/preview.html written — ${(out.length / 1024 / 1024).toFixed(2)} MB`,
+            withVideo ? "(with banner video)" : "(poster only, --no-video)");

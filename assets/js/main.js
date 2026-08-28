@@ -82,6 +82,13 @@
     const showCue = () => { if (cue) cue.hidden = false; };
     const hideCue = () => { if (cue) cue.hidden = true; };
 
+    // A bundle built with --no-video ships the poster and no source at all.
+    // There is nothing to start, so offer nothing and leave the still frame.
+    if (!video.querySelector("source[src], source[data-src]") && !video.src) {
+      hideCue();
+      return;
+    }
+
     const attempt = () => {
       const p = video.play();
       if (!p || !p.then) return;
