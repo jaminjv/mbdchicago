@@ -172,6 +172,45 @@ a harmless 404 for each and uses the fallback.
 
 ---
 
+## Editing prices from the browser
+
+There is a password-protected page at **`/admin.html`** where prices can be
+changed without touching any code. It is built for someone who does not want to
+see a repository: sign in, edit a number, press save, and the website shows the
+new figure straight away.
+
+### How it is put together
+
+Every price still lives in `assets/data/content.js`, and that is what the pages
+render first — so the menu is complete and indexable before anything is fetched,
+and **if the database is unreachable the site simply shows the file prices**. The
+database holds only the prices changed since; those are fetched after paint and
+patched in. Nothing on the page depends on the service being up.
+
+A dish is matched between the two by `<section>:<slug-of-name>` (see
+`assets/js/dish-id.js`). Renaming a dish therefore detaches any saved price for
+it and it reverts to the file value — the admin page flags those so they can be
+re-entered.
+
+### One-time setup
+
+1. Create a free project at [supabase.com](https://supabase.com).
+2. **SQL Editor → New query**, paste all of `supabase/setup.sql`, press Run.
+   That creates the table and the security rules.
+3. **Authentication → Users → Add user**, with the owner's email and a password.
+   Tick *Auto Confirm User*. Repeat for anyone else who needs access — there is
+   no public sign-up, so only invited accounts can ever write.
+4. **Project Settings → API**, copy *Project URL* and the *anon public* key into
+   `assets/data/supabase-config.js`, then commit.
+
+That last key is meant to be public: it names the project, it does not grant
+access. What protects the prices is the policy from step 2 — anyone may read
+them, only a signed-in user may change them. The `service_role` key on that same
+settings page bypasses every policy and must never go in this repo.
+
+Until step 4 is done `/admin.html` explains that it is not connected yet, and
+the public pages behave exactly as a plain static site.
+
 ## Deploying
 
 The workflow in `.github/workflows/pages.yml` publishes every push to

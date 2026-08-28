@@ -594,6 +594,64 @@ p  { text-wrap: pretty; }
 .cater-cta .script,
 .strip .script { color: var(--cocoa); }
 
+/* --- Admin (assets/js/admin.js, admin.html) ---------------------- */
+.admin { min-height: 100dvh; display: flex; flex-direction: column; background: var(--cream); }
+.admin__bar {
+  display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+  padding: .9rem var(--gutter);
+  background: var(--cocoa); color: var(--white);
+}
+.admin__bar img { height: 38px; width: auto; }
+.admin__who { margin-left: auto; font-size: .86rem; color: rgba(255,255,255,.7); }
+.admin__main { flex: 1; width: min(100% - var(--gutter) * 2, 820px); margin-inline: auto; padding: clamp(1.5rem, 4vw, 3rem) 0; }
+
+.admin__card {
+  background: var(--white); border: 3px solid var(--cocoa); border-radius: var(--r-lg);
+  padding: clamp(1.4rem, 4vw, 2.2rem); box-shadow: 0 10px 0 var(--cocoa);
+}
+.admin__card h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); margin-bottom: .5rem; }
+.admin__card p { color: var(--ink-muted); }
+
+.field { display: grid; gap: .4rem; margin-top: 1.1rem; }
+.field label { font-size: .78rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted); }
+.field input {
+  font: inherit; padding: .8rem 1rem;
+  border: 3px solid var(--cocoa); border-radius: var(--r-sm); background: var(--white); color: var(--cocoa);
+}
+.field input:focus-visible { outline: 3px solid var(--sunny); outline-offset: 2px; }
+
+.note { margin-top: 1rem; padding: .85rem 1.1rem; border-radius: var(--r-sm); font-size: .92rem; font-weight: 600; }
+.note--bad  { background: #ffdcd2; color: #8c2d12; }
+.note--good { background: #dff0d8; color: #33612a; }
+.note--warn { background: var(--sunny-soft); color: var(--sunny-deep); }
+.note[hidden] { display: none; }
+
+.admin__section { margin-top: clamp(1.6rem, 4vw, 2.4rem); }
+.admin__section h2 { font-size: 1.15rem; margin-bottom: .7rem; }
+.price-row {
+  display: flex; align-items: center; gap: 1rem;
+  padding: .7rem 1rem;
+  background: var(--white); border: 2px solid var(--cream-deep); border-radius: var(--r-sm);
+}
+.price-row + .price-row { margin-top: .5rem; }
+.price-row__name { font-weight: 700; flex: 1; min-width: 0; }
+.price-row input {
+  font: inherit; font-weight: 800; font-variant-numeric: tabular-nums;
+  width: 7.5rem; padding: .5rem .7rem; text-align: right;
+  border: 2px solid var(--cocoa); border-radius: 10px; background: var(--white); color: var(--cocoa);
+}
+.price-row[data-changed="true"] { border-color: var(--sunny); background: #fffdf5; }
+.price-row__was { font-size: .74rem; font-weight: 700; color: var(--sunny-deep); white-space: nowrap; }
+
+.admin__save {
+  position: sticky; bottom: 0; z-index: 5;
+  display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+  margin-top: 2rem; padding: 1rem;
+  background: var(--cocoa); color: var(--white); border-radius: var(--r-lg);
+}
+.admin__save span { font-size: .92rem; color: rgba(255,255,255,.75); }
+.admin__save .btn { margin-left: auto; }
+
 
 /* --- Preview shell: three pages as hash-routed views -------- */
 .view { display: none; }
@@ -1347,6 +1405,31 @@ window.MBD = (function () {
 </script>
 <script>
 /* ============================================================
+   Stable identifier for a menu item.
+
+   Prices live in the repo (assets/data/content.js) and can be
+   overridden from the database. Both sides need to agree on what
+   names a dish, and this is that agreement: the section it sits in
+   plus a slug of its name.
+
+   Renaming a dish therefore changes its id, and any price saved
+   under the old one stops applying — the dish falls back to the
+   price in the file. The admin page flags those orphans so they can
+   be cleared out.
+   ============================================================ */
+window.MBD_dishId = function (sectionId, name) {
+  const slug = String(name)
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")   // strip accents
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return sectionId + ":" + slug;
+};
+
+</script>
+<script>
+/* ============================================================
    Morning Breakfast Delight — behavior
    Renders content from assets/data/content.js and wires up the
    nav, hero video, review carousel and scroll reveals.
@@ -1625,8 +1708,8 @@ window.MBD = (function () {
     return `<span class="${tagClass(t)}">${icon}${esc(tagLabel(t))}</span>`;
   };
 
-  const dishCard = (d) => `
-    <article class="dish reveal">
+  const dishCard = (d, sectionId) => `
+    <article class="dish reveal" data-dish-id="${esc(window.MBD_dishId(sectionId, d.name))}">
       <div class="dish__top">
         <h3 class="dish__name">${esc(d.name)}</h3>
         <span class="dish__price">${esc(d.price)}</span>
@@ -1644,7 +1727,7 @@ window.MBD = (function () {
           <h2>${esc(s.title)}</h2>
           <p>${esc(s.blurb)}</p>
         </header>
-        <div class="menu-grid">${s.items.map(dishCard).join("")}</div>
+        <div class="menu-grid">${s.items.map((d) => dishCard(d, s.id)).join("")}</div>
       </div>
     </section>`;
 

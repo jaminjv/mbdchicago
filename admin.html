@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Menu Prices — Morning Breakfast Delight</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#30221d">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<div class="admin">
+
+  <header class="admin__bar">
+    <img src="assets/img/logo-mark.svg" alt="Morning Breakfast Delight">
+    <strong>Menu prices</strong>
+    <span class="admin__who" id="who"></span>
+  </header>
+
+  <main class="admin__main">
+
+    <!-- Shown until assets/data/supabase-config.js is filled in. -->
+    <section id="view-setup" class="admin__card" hidden>
+      <h1>Not connected yet</h1>
+      <p>
+        This page edits prices on the live site, which needs a database behind it.
+        Once the Supabase project exists, put its URL and public key into
+        <code>assets/data/supabase-config.js</code> and this page becomes a sign-in form.
+      </p>
+      <p style="margin-top:1rem">The full walkthrough is in the project README, under
+        <em>Editing prices from the browser</em>.</p>
+      <a class="btn btn--sm" style="margin-top:1.4rem" href="./">Back to the website</a>
+    </section>
+
+    <!-- Sign in -->
+    <section id="view-login" class="admin__card" hidden>
+      <h1>Sign in</h1>
+      <p>Use the account set up for the restaurant.</p>
+      <form id="login-form" novalidate>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" type="email" autocomplete="username" required>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" type="password" autocomplete="current-password" required>
+        </div>
+        <p class="note note--bad" id="login-msg" hidden></p>
+        <button class="btn" id="login-btn" type="submit" style="margin-top:1.4rem">Sign in</button>
+      </form>
+    </section>
+
+    <!-- The editor -->
+    <section id="view-editor" hidden>
+      <div class="admin__card">
+        <h1>Change a price</h1>
+        <p>
+          Edit any figure below and press save. The website updates immediately —
+          nothing needs republishing. Everything else on the menu stays as it is.
+        </p>
+        <p class="note" id="editor-msg" hidden></p>
+      </div>
+
+      <div id="dishes"></div>
+
+      <div class="admin__save">
+        <span id="change-count">No changes yet</span>
+        <button class="btn" id="save" type="button" disabled>Save changes</button>
+      </div>
+
+      <p style="margin-top:1.5rem;display:flex;gap:1rem;flex-wrap:wrap">
+        <a class="btn btn--sm" href="menu.html">View the menu</a>
+        <button class="btn btn--sm btn--ink" id="signout" type="button">Sign out</button>
+      </p>
+    </section>
+
+  </main>
+</div>
+
+<script src="assets/data/supabase-config.js"></script>
+<script src="assets/data/content.js"></script>
+<script src="assets/js/dish-id.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>

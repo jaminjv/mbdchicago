@@ -277,8 +277,8 @@
     return `<span class="${tagClass(t)}">${icon}${esc(tagLabel(t))}</span>`;
   };
 
-  const dishCard = (d) => `
-    <article class="dish reveal">
+  const dishCard = (d, sectionId) => `
+    <article class="dish reveal" data-dish-id="${esc(window.MBD_dishId(sectionId, d.name))}">
       <div class="dish__top">
         <h3 class="dish__name">${esc(d.name)}</h3>
         <span class="dish__price">${esc(d.price)}</span>
@@ -296,7 +296,7 @@
           <h2>${esc(s.title)}</h2>
           <p>${esc(s.blurb)}</p>
         </header>
-        <div class="menu-grid">${s.items.map(dishCard).join("")}</div>
+        <div class="menu-grid">${s.items.map((d) => dishCard(d, s.id)).join("")}</div>
       </div>
     </section>`;
 

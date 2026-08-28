@@ -48,6 +48,8 @@ const css = read("assets/css/styles.css").replace(
   });
 const data = read("assets/data/content.js");
 const main = read("assets/js/main.js");
+// main.js calls MBD_dishId, so its definition has to travel with it.
+const dishId = read("assets/js/dish-id.js");
 
 /* The marks are tens of KB of paths, so each goes in once as a <symbol>
    and every use point references it. A <use> of a <symbol> already
@@ -225,6 +227,9 @@ function mapCard(b) {
 </script>
 <script>
 ${patchedData}
+</script>
+<script>
+${dishId}
 </script>
 <script>
 ${patchedMain}
