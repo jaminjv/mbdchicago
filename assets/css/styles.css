@@ -12,6 +12,10 @@
    weight varies here, so the other axes are pinned — optical size at
    the 24pt text grade — which takes the woff2 from 1.9 MB to 92 KB.
    Licensed under the OFL; see GoogleSansFlex-OFL.txt.
+
+   Nexa Script is the Bold cut, whose stroke weight matches the logo
+   lockup. It is currently the PERSONAL USE build — a commercial
+   licence is needed before launch. See NexaScript-LICENCE.txt.
 ------------------------------------------------------------------ */
 @font-face {
   font-family: "Nexa Script";

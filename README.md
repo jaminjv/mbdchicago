@@ -121,18 +121,22 @@ Licensed under the OFL, included as `GoogleSansFlex-OFL.txt`.
 With both faces local, **the pages request nothing from a third party**. That is
 the durable fix for type looking different on an iPad than on a desktop.
 
-#### Nexa Script Free has no capital letters
+#### Nexa Script needs a commercial licence before launch
 
-The supplied file is the *Free* cut, and 25 of its 26 uppercase glyphs are
-byte-identical to their lowercase counterparts — `G` draws the same outline as
-`g`, `M` the same as `m`. Setting a capital in the markup therefore changes
-nothing on screen, whatever the text says.
+`nexa-script.woff2` is **Nexa Script Bold**, whose stroke weight matches the logo
+lockup, and it has real capitals — all 26 uppercase glyphs are distinct outlines,
+so the title-cased headings render as intended.
 
-The headings are written in proper title case anyway (`Good Morning,`), which is
-right for screen readers, for search results, and for the day the full font
-arrives — capitals will appear on their own with no code change. The brand PDF's
-lockup does show real capitals, so the logo artwork was set in the full
-commercial version.
+It came from the befonts package, which is marked **Personal Use Only**. A
+restaurant website is commercial use, so a licence has to be bought from
+Fontfabric before this goes public:
+
+  <https://www.fontfabric.com/fonts/nexa-script/>
+
+`nexa-script-free.otf` is kept alongside as the licence-clean fallback. It is
+free for commercial use but has **no real capitals** — 25 of its 26 uppercase
+glyphs duplicate their lowercase outlines, so `Good Morning,` renders as
+`good morning,`. To fall back to it, point the `@font-face` at that file.
 
 ### Why the type can differ between an iPad and a desktop
 
