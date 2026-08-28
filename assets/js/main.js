@@ -283,7 +283,7 @@
         <h3 class="dish__name">${esc(d.name)}</h3>
         <span class="dish__price">${esc(d.price)}</span>
       </div>
-      <p class="dish__desc">${esc(d.desc)}</p>
+      ${d.desc ? `<p class="dish__desc">${esc(d.desc)}</p>` : ""}
       ${d.tags && d.tags.length
         ? `<div class="dish__tags">${d.tags.map(tagChip).join("")}</div>`
         : ""}

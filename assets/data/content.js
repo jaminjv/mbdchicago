@@ -5,10 +5,11 @@
    weekly specials, menu items, prices, reviews and order links.
 
    VERIFICATION FLAG
-   Items carrying `todo: true` were reconstructed from public
-   listings (Toast / ezCater / Yelp aggregators) and their price
-   or wording still needs a check against the live menu.
-   Remove the flag once confirmed. See README.md.
+   The food menu is transcribed from the restaurant's printed menu,
+   so it carries no flags. What remains flagged with `todo: true` is
+   the catering list, reconstructed from the ezCater listing, which
+   could not be reached from here. Remove each flag as it is checked
+   against the real ezCater page. See README.md.
    ============================================================ */
 
 window.MBD = (function () {
@@ -93,30 +94,27 @@ window.MBD = (function () {
   const specials = [
     {
       badge: "This week's headliner",
-      name: "Berries & Nutella Crepes",
-      desc: "Crepes rolled and ribboned with Nutella and raspberry coulis, piled with strawberries, blueberries and blackberries, finished with fresh whipped cream and powdered sugar.",
-      price: "$16.95",
+      name: "Mateo's Crepe",
+      desc: "Two crepes filled with strawberries, strawberry mascarpone and bananas, topped with Nutella and chocolate syrup.",
+      price: "$16.00",
       img: "assets/img/special-berries-crepes.jpg",
       alt: "Crepes drizzled with Nutella and raspberry sauce, topped with whipped cream, blackberries and blueberries, surrounded by fresh berries",
-      todo: true
     },
     {
       badge: "Fan favorite",
-      name: "Waffle Breakfast",
-      desc: "Cheddar-buttermilk waffles stacked around scrambled eggs, bacon and hash browns, served with our house-roasted breakfast potatoes and fresh orange.",
-      price: "$15.75",
+      name: "Waffle Sandwich",
+      desc: "Scrambled eggs, bacon, green onions and mixed cheddar between two waffles. Gluten-free option available.",
+      price: "$17.95",
       img: "assets/img/special-waffle-breakfast.jpg",
-      alt: "Waffle sandwich stacked with scrambled eggs and bacon, served with roasted breakfast potatoes and an orange slice",
-      todo: true
+      alt: "Waffle sandwich stacked with scrambled eggs and bacon, served with roasted breakfast potatoes and an orange slice"
     },
     {
       badge: "Chef's pick",
-      name: "Avocado Waffle",
-      desc: "Sliced avocado over a golden waffle base, loaded with house chorizo and roasted peppers, finished with a crema drizzle.",
-      price: "$16.50",
+      name: "Breakfast Chorizo",
+      desc: "Avocado and eggs mixed with chorizo, caramelized onion, roasted poblano pepper, tomatoes, chihuahua cheese and queso fresco, topped with chipotle and sour cream on sourdough.",
+      price: "$16.95",
       img: "assets/img/special-avocado-waffle.jpg",
-      alt: "Open-faced waffle topped with sliced avocado, chorizo and roasted peppers under a crema drizzle, with avocado halves alongside",
-      todo: true
+      alt: "Avocado toast piled with chorizo and roasted peppers under a crema drizzle, with avocado halves alongside"
     }
   ];
 
@@ -149,77 +147,173 @@ window.MBD = (function () {
   ];
 
   /* ---- Menu ------------------------------------------------
-     Sections render in this order on menu.html.
-     tags: "veg" | "spicy" | "favorite" | any free text
+     Transcribed from the restaurant's printed menu (the PDF in the
+     project notes). Prices and wording come from that document.
+
+     `tags` renders a chip: "veg", "spicy", "favorite", or any free
+     text. veg and spicy are read off the descriptions; favorite is
+     reserved for the dishes public reviews single out.
   ---------------------------------------------------------- */
   const menu = [
     {
-      id: "benedicts",
-      title: "Benedicts",
-      blurb: "Poached eggs, house hollandaise, and a little more attitude than you expect.",
+      id: "sweets",
+      title: "Sweets",
+      blurb: "French toast, crepes, churros and pancakes — the reason people bring a friend.",
       items: [
-        { name: "Chef's Benedict", price: "$14.65", desc: "Pork belly, grilled jalapeño, caramelized onion and grilled panela cheese under chipotle hollandaise and two poached eggs.", tags: ["favorite", "spicy"] },
-        { name: "Efrain Benedict", price: "$14.65", desc: "Corned beef and panela cheese with two poached eggs and sun-dried tomato hollandaise on an English muffin.", tags: ["favorite"], todo: true },
-        { name: "Classic Benedict", price: "$13.45", desc: "Ham, two poached eggs and chipotle hollandaise on a toasted English muffin.", todo: true },
-        { name: "Portobello Benedict", price: "$14.25", desc: "Breaded portobello, sautéed spinach, caramelized onion and roasted tomato with two poached eggs and chipotle hollandaise.", tags: ["veg"], todo: true }
+        { name: "Churros", price: "$17.00", desc: "Three French toast-style churros filled with raspberry, caramel and Nutella, topped with strawberry mascarpone.", tags: ["veg"] },
+        { name: "Pancakes (Plain) or French Toast", price: "$6.00", desc: "Single $6.00 · Short stack of two $8.95 · Full stack of three $9.95.", tags: ["veg"] },
+        { name: "Cannoli French Toast", price: "$16.95", desc: "Cannoli trio, espresso sauce, cannoli filling, chocolate syrup, raspberry sauce and pistachio.", tags: ["veg"] },
+        { name: "Mateo's Crepe", price: "$16.00", desc: "Two crepes filled with strawberries, strawberry mascarpone and bananas, topped with Nutella and chocolate syrup.", tags: ["veg", "favorite"] },
+        { name: "Coconut Tres Leches", price: "$16.00", desc: "Caramel, raspberry sauce, strawberry, banana and whipped cream.", tags: ["veg"] },
+        { name: "Farah's Cheesecake French Toast", price: "$17.00", desc: "Lemon coulis and raspberry cheesecake filling, topped with graham crackers and raspberry coulis.", tags: ["veg"] },
+        { name: "Crispy Crème Brûlée French Toast", price: "$17.00", desc: "Served over French toast, topped with caramelized sugar, bananas and crème brûlée cream sauce, finished with raspberry coulis.", tags: ["veg", "favorite"] },
+        { name: "Pancake with Nutella", price: "$16.00", desc: "With strawberry and bananas.", tags: ["veg"] },
+        { name: "Cuban French Toast", price: "$17.00", desc: "Guava sauce, raspberry coulis, whipped cream and granola.", tags: ["veg"] },
+        { name: "French Toast Flight", price: "$20.00", desc: "Crème brûlée with banana and raspberry coulis · Guava with granola and whipped cream · Cajeta churro with caramel and whipped cream.", tags: ["veg", "favorite"] },
+      ]
+    },
+    {
+      id: "sandwiches",
+      title: "Sandwiches",
+      blurb: "Lunch shows up around eleven and stays until four.",
+      items: [
+        { name: "Fried Egg Sandwich", price: "$19.50", desc: "Sourdough, feta, ham, bacon, two over-hard eggs, chipotle mayo, sliced tomatoes, avocado and thyme.", tags: ["spicy"] },
+        { name: "BLT Sandwich", price: "$17.95", desc: "Lettuce, tomato, bacon and mayonnaise." },
+        { name: "Waffle Sandwich", price: "$17.95", desc: "Scrambled eggs, bacon, green onions and mixed cheddar. Gluten-free option available.", tags: ["favorite"] },
+        { name: "Dan's Churrasco Sandwich", price: "$23.50", desc: "Grilled steak, smoked chicken sausage, smoked gouda and homemade chimichurri on ciabatta, with Greek fries." },
+        { name: "Caribbean Club Sandwich", price: "$17.50", desc: "Bacon, lettuce, tomato, avocado, smoked gouda, chipotle mayo and jerk chicken seasoning, with fries.", tags: ["spicy"] },
+        { name: "Croissant Sandwich", price: "$16.95", desc: "Two eggs any style and cheese with your choice of ham, bacon or veggies." },
+        { name: "Reuben Sandwich", price: "$19.95", desc: "Homemade Thousand Island, jalapeño sauerkraut, smoked gouda, mustard, two over-hard eggs and corned beef on rye.", tags: ["spicy"] },
+        { name: "Gyro Sandwich", price: "$19.95", desc: "Gyro meat, tzatziki, fresh tomatoes, onion and parsley." },
+        { name: "Breakfast Burger", price: "$17.95", desc: "Chipotle mayo, lettuce, tomato, grilled onion, fried egg, cheddar and bacon.", tags: ["spicy"] },
+      ]
+    },
+    {
+      id: "omelettes",
+      title: "Omelettes",
+      blurb: "Served with potatoes and toast. Build your own from $10.95 — proteins $4.00, veggies, cheeses and toppings $1.25 each.",
+      items: [
+        { name: "Salmon Omelette", price: "$18.95", desc: "Capers, caramelized onion, tomato, spinach, avocado, cream cheese and sun-dried tomato." },
+        { name: "Veggie Omelette", price: "$18.95", desc: "Caramelized onion, mushrooms, tomato, butternut squash, spinach and goat cheese, topped with a red wine reduction.", tags: ["veg"] },
+        { name: "Azteca", price: "$18.95", desc: "Bacon, pork sausage, turkey sausage, jalapeño, chihuahua cheese, caramelized onion, diced tomatoes and queso fresco, topped with green salsa and pico de gallo.", tags: ["spicy"] },
+        { name: "Mayan", price: "$18.95", desc: "Chorizo, bell peppers, onion, cilantro, garlic, tomatoes, chihuahua cheese and queso fresco, topped with green salsa and sour cream, with a side of two plantains.", tags: ["spicy"] },
+        { name: "Sparta", price: "$18.95", desc: "Scallions, Greek sausage, tomatoes, black olives, spinach, onion and feta, topped with spicy feta cheese.", tags: ["spicy"] },
+        { name: "Artichoke", price: "$18.25", desc: "Artichoke, roasted tomatoes, spinach, caramelized onion and goat cheese, topped with pesto.", tags: ["veg"] },
+        { name: "Louisiana Omelette", price: "$19.75", desc: "Bell peppers, ham, bacon, chicken sausage, jalapeño, cheddar and onion with pork gravy and two biscuits on top.", tags: ["spicy"] },
+        { name: "Chicken Fajita Omelette", price: "$19.75", desc: "Grilled chicken, bell peppers, onion, tomato, jalapeño, chihuahua cheese, sour cream, salsa verde, pico de gallo and avocado on top.", tags: ["spicy"] },
       ]
     },
     {
       id: "skillets",
       title: "Skillets",
-      blurb: "Cast-iron, loaded to the edge, eggs any style on top.",
+      blurb: "Served with potatoes and toast. Cast-iron, loaded to the edge, eggs any style on top.",
       items: [
-        { name: "Papi Skillet", price: "$15.70", desc: "Tinga, bell peppers, onion and potatoes with Chihuahua cheese and queso fresco, topped with sour cream, guacamole, pico de gallo, salsa verde and two eggs any style.", tags: ["favorite", "spicy"] },
-        { name: "Steak Fajita Skillet", price: "$16.75", desc: "Steak and fajita mix with potatoes, Chihuahua cheese and queso fresco, finished with salsa verde, sour cream, pico de gallo, avocado and two eggs any style." },
-        { name: "Malaka Skillet", price: "$14.95", desc: "Scrambled eggs with mixed mushrooms, roasted tomato, spinach, potatoes, caramelized onion, mozzarella and cream cheese.", tags: ["veg"], todo: true }
+        { name: "Papi Skillet", price: "$19.75", desc: "Chicken tinga, bell peppers, onion and potatoes with chihuahua cheese and queso fresco, topped with sour cream, avocado, pico de gallo, green salsa and two eggs any style.", tags: ["spicy", "favorite"] },
+        { name: "Mr. Pancho", price: "$19.75", desc: "Chorizo, corn, roasted poblano peppers, tomatoes, queso fresco, potatoes and chihuahua cheese, topped with sweet and sour sauce and two eggs any style.", tags: ["spicy"] },
+        { name: "Mushroom", price: "$18.00", desc: "White button, portobello and shiitake mushrooms with roasted tomatoes, spinach, potatoes, cream cheese, caramelized onion and fresh mozzarella, topped with sweet and sour sauce and two eggs any style.", tags: ["veg"] },
+        { name: "Steak Fajitas", price: "$19.95", desc: "Steak and fajita bell pepper mix with chihuahua cheese, queso fresco, sour cream, potatoes and two eggs any style, topped with green sauce, pico de gallo and avocado." },
+        { name: "Malaka", price: "$19.95", desc: "Greek sausage, tomatoes, spinach, olives, caramelized onion and potatoes, topped with spicy feta spread and two eggs any style.", tags: ["spicy"] },
+        { name: "Jesus Skillet", price: "$20.95", desc: "Caramelized onions, tomato, sweet potato, butternut squash, spinach, goat cheese, pork belly, mango habanero sauce, bell peppers and two eggs any style.", tags: ["spicy"] },
+        { name: "Mr. Vasic Skillet", price: "$20.95", desc: "Smoked sausage, chicken sausage, bacon, ham, cheddar, bell peppers, sweet plantains, caramelized onions, mango habanero sauce and two eggs any style.", tags: ["spicy"] },
       ]
     },
     {
       id: "mexican",
-      title: "From the Mexican Kitchen",
+      title: "Mexican Style",
       blurb: "The plates that made the neighborhood pay attention.",
       items: [
-        { name: "Poblano Chilaquiles", price: "$16.45", desc: "Crisp tortillas simmered in poblano salsa with queso fresco, crema, red onion and two eggs any style. Add steak or chicken.", tags: ["favorite"], todo: true },
-        { name: "Steak Chilaquiles", price: "$18.45", desc: "Our chilaquiles with marinated skirt steak and salsa verde — the one the reviews keep talking about.", tags: ["favorite"], todo: true },
-        { name: "Huevos Rancheros", price: "$15.75", desc: "Two eggs over crisp tortillas with ranchero sauce, refried beans, queso fresco and avocado.", todo: true },
-        { name: "Birria Plate", price: "$18.95", desc: "Slow-braised birria with consommé for dipping, onion, cilantro and warm tortillas.", tags: ["favorite"], todo: true },
-        { name: "Burrito Delight", price: "$15.45", desc: "Eggs, potatoes, cheese and your choice of protein wrapped tight, griddled, and served with salsa and crema.", todo: true },
-        { name: "Breakfast Burrito", price: "$14.45", desc: "Scrambled eggs, bacon, potatoes and Chihuahua cheese with pico de gallo.", todo: true }
+        { name: "Birria Plate Consommé", price: "$19.00", desc: "Two birria quesadillas topped with onion and cilantro, served with rice and a cup of consommé.", tags: ["favorite"] },
+        { name: "Vegan Chilaquiles", price: "$18.00", desc: "Fried tortilla strips covered with your choice of green or red sauce, topped with tofu, bell peppers, onion and spinach, with a side of potato.", tags: ["veg"] },
+        { name: "Steak Chilaquiles", price: "$22.95", desc: "Chilaquiles red or green with two quesadillas, 4 oz steak, queso fresco, avocado, chihuahua cheese, pico de gallo, sour cream, two eggs any style and a side of potato.", tags: ["favorite"] },
+        { name: "Poblano Chilaquiles", price: "$19.00", desc: "Fried tortillas covered with your choice of sauce, topped with poblano pepper filled with chorizo, rice, queso fresco and chihuahua cheese, two eggs any style and a side of potato.", tags: ["spicy"] },
+        { name: "Mole Enchiladas", price: "$17.95", desc: "Chicken tinga topped with queso fresco, served with two eggs any style and a side of rice. With steak $20.95." },
+        { name: "Huevos Rancheros", price: "$20.00", desc: "Fried eggs on crispy corn tortillas, smothered with refried beans and topped with steak, chipotle tomato sauce, queso fresco and sour cream.", tags: ["spicy", "favorite"] },
+        { name: "Burrito Delight", price: "$16.95", desc: "Eggs, chorizo, corn, roasted poblano peppers, tomato and queso fresco with red or green sauce on the side, served with a side of potato.", tags: ["spicy"] },
+        { name: "Breakfast Burrito", price: "$16.95", desc: "Scrambled eggs, potato, tomato, avocado, chicken sausage, jalapeño, queso fresco and sour cream, with salsa verde on the side.", tags: ["spicy"] },
+        { name: "Tex-Mex Tacos (3)", price: "$16.95", desc: "Scrambled egg, bacon, poblano pepper, caramelized onion, corn, potatoes, sour cream, BBQ sauce and queso fresco." },
       ]
     },
     {
-      id: "eggs",
-      title: "Eggs & Omelettes",
-      blurb: "Three eggs, folded around whatever you're in the mood for.",
+      id: "hash",
+      title: "Hash & Eggs",
+      blurb: "Served with house potatoes.",
       items: [
-        { name: "Chicken Fajita Omelette", price: "$15.25", desc: "Grilled chicken, peppers, onion and Chihuahua cheese with avocado and pico de gallo.", todo: true },
-        { name: "Build-Your-Own Omelette", price: "$12.95", desc: "Three eggs and up to three fillings. Served with breakfast potatoes and toast.", todo: true },
-        { name: "Steak & Eggs", price: "$19.45", desc: "Grilled skirt steak with two eggs any style, breakfast potatoes and toast.", todo: true },
-        { name: "Two Eggs Any Style", price: "$11.45", desc: "Two eggs, breakfast potatoes, toast, and your choice of bacon, sausage or ham.", todo: true }
+        { name: "Hash and Eggs", price: "$19.00", desc: "Corned beef slow cooked for 18 hours with seasoned onion and diced potatoes, two eggs any style, served with a side of toast." },
+        { name: "Vegan Hash", price: "$19.00", desc: "Seasonal veggies sautéed in a chipotle tomato sauce, topped with tofu scramble and served with toast.", tags: ["veg", "spicy"] },
+        { name: "Chorizo Hash", price: "$19.00", desc: "Mexican sausage, poblano, corn, caramelized onion, bacon, diced potatoes, bell pepper, queso fresco and two eggs any style, topped with sour cream and green sauce.", tags: ["spicy"] },
+        { name: "Pork Belly Hash", price: "$19.50", desc: "Pork belly, butternut squash, potatoes, sweet plantains, spinach, bell peppers, onion, jalapeño and smoked gouda with two eggs any style, topped with sweet and sour sauce.", tags: ["spicy"] },
+        { name: "Veggie Hash", price: "$18.95", desc: "Bell peppers, mushrooms, butternut squash, spinach, broccoli, cauliflower, onions, sun-dried tomato pesto, house potatoes, mixed cheddar and two eggs any style.", tags: ["veg"] },
       ]
     },
     {
-      id: "sweet",
-      title: "The Sweet Side",
-      blurb: "French toast, crepes, pancakes and waffles — the reason people bring a friend.",
+      id: "benedict",
+      title: "Benedict",
+      blurb: "Poached eggs, house hollandaise, and a little more attitude than you expect.",
       items: [
-        { name: "Crispy Crème Brûlée French Toast", price: "$16.25", desc: "French toast under a torched caramelized sugar crust with bananas and crème brûlée cream sauce.", tags: ["favorite"], todo: true },
-        { name: "Crispy Piña Colada French Toast", price: "$15.95", desc: "Coconut-crusted French toast with pineapple, toasted coconut and coconut cream.", todo: true },
-        { name: "French Toast Flight", price: "$17.50", desc: "A tasting of the kitchen's French toasts. Made for sharing — or not.", tags: ["favorite"], todo: true },
-        { name: "Berries & Nutella Crepes", price: "$16.95", desc: "Two crepes filled with strawberries, strawberry mascarpone and bananas, finished with Nutella and chocolate syrup.", tags: ["favorite"], todo: true },
-        { name: "Buttermilk Pancakes", price: "$12.45", desc: "A short stack of three, with butter and warm syrup. Add berries, banana or chocolate chips.", todo: true },
-        { name: "Belgian Waffle", price: "$12.95", desc: "Crisp outside, soft inside, with powdered sugar and syrup.", todo: true }
+        { name: "Efrain's Benedict", price: "$19.00", desc: "Corned beef and panela cheese with two poached eggs, topped with sun-dried tomato hollandaise.", tags: ["favorite"] },
+        { name: "Classic Benedict", price: "$17.00", desc: "Ham, chipotle hollandaise and two poached eggs.", tags: ["spicy"] },
+        { name: "Portobello Benedict", price: "$18.00", desc: "Breaded portobello mushroom, sautéed spinach, caramelized onion and roasted tomatoes with chipotle hollandaise and two poached eggs.", tags: ["veg", "spicy"] },
+        { name: "Chef's Benedict", price: "$19.00", desc: "Pork belly, grilled jalapeño, caramelized onion and grilled panela cheese with chipotle hollandaise and two poached eggs.", tags: ["spicy", "favorite"] },
+        { name: "Smoked Salmon Benedict", price: "$19.95", desc: "Avocado, chipotle hollandaise and two poached eggs.", tags: ["spicy"] },
+        { name: "Mango Habanero Crispy Chicken", price: "$19.50", desc: "Brioche loaf, sautéed spinach and tomatoes, tartar sauce, mango habanero hollandaise and two poached eggs.", tags: ["spicy"] },
+        { name: "Benedict Flight", price: "$19.95", desc: "Classic with ham and chipotle hollandaise · Salmon with avocado and chipotle hollandaise · Efrain with corned beef, panela cheese and sun-dried tomato hollandaise.", tags: ["favorite"] },
       ]
     },
     {
-      id: "handhelds",
-      title: "Sandwiches & Handhelds",
-      blurb: "Lunch shows up around eleven and stays until four.",
+      id: "wraps",
+      title: "Wraps",
+      blurb: "Served with your choice of side salad, steamed veggies, fruit, fries or potatoes.",
       items: [
-        { name: "MBD Burger", price: "$16.45", desc: "Double smash patty with cheddar, lettuce, tomato, onion and house sauce on a brioche bun, with fries.", tags: ["favorite"], todo: true },
-        { name: "Breakfast Sandwich", price: "$12.95", desc: "Egg, cheese and your choice of bacon, sausage or ham on a brioche bun or croissant.", todo: true },
-        { name: "Chicken Torta", price: "$15.25", desc: "Grilled chicken, refried beans, avocado, jalapeño and crema on telera bread.", todo: true },
-        { name: "Breakfast Tacos", price: "$13.45", desc: "Three tacos with scrambled eggs, potatoes, cheese and your choice of protein.", todo: true }
+        { name: "Chicken Wrap", price: "$16.95", desc: "Avocado, lettuce, tomato, onion, mango chutney and green salsa." },
+        { name: "Steak Wrap", price: "$18.95", desc: "Beans, lettuce, pico de gallo, caramelized onions, queso fresco, chipotle sauce, chihuahua cheese and avocado.", tags: ["spicy"] },
+        { name: "Greek Street Wrap", price: "$17.00", desc: "Gyro meat, tzatziki, fresh tomatoes, onion, parsley, fries and spicy feta.", tags: ["spicy"] },
+      ]
+    },
+    {
+      id: "combos",
+      title: "Combos & Salads",
+      blurb: "The plates you order when you know exactly what you want.",
+      items: [
+        { name: "Morning Combo", price: "$16.00", desc: "Two eggs any style with ham, sausage or bacon, and potatoes or pancakes." },
+        { name: "Chicken Biscuit", price: "$18.95", desc: "Two eggs any style, cornflake breaded chicken, three bacon biscuits and a side of pork gravy." },
+        { name: "Chicken Waffle", price: "$19.95", desc: "Cornflake breaded chicken, waffle and a side of pork gravy." },
+        { name: "Chef's Chopped Salad", price: "$16.95", desc: "Chicken, ham, bacon, tomatoes, green onion, romaine, feta and lemon vinaigrette." },
+        { name: "Mr. Broeker Ribeye", price: "$35.00", desc: "Ribeye topped with chimichurri, with potatoes, sweet plantains and two eggs any style." },
+      ]
+    },
+    {
+      id: "avocado-toast",
+      title: "Avocado Toast",
+      blurb: "All on sourdough, all worth the photo.",
+      items: [
+        { name: "Breakfast Chorizo", price: "$16.95", desc: "Avocado and eggs mixed with chorizo, caramelized onion, roasted poblano pepper, tomatoes, chihuahua cheese and queso fresco, topped with chipotle and sour cream.", tags: ["spicy", "favorite"] },
+        { name: "Florentino", price: "$17.95", desc: "Avocado and smoked salmon with spinach, roasted tomatoes, mushrooms, fresh mozzarella, cream cheese, two eggs any style and balsamic glaze." },
+        { name: "Derek's Avocado", price: "$17.95", desc: "Salmon, avocado, capers, hard boiled egg, balsamic glaze, pickled onions, sriracha, mayo and feta.", tags: ["spicy"] },
+      ]
+    },
+    {
+      id: "kids",
+      title: "Kids Menu",
+      blurb: "For the smaller appetite at the table.",
+      items: [
+        { name: "Kids Combo", price: "$12.00", desc: "One egg any style, bacon, sausage and a choice of pancake or French toast, with potatoes or fries." },
+        { name: "Kids Quesadilla", price: "$11.00", desc: "Plain cheese quesadilla, served with potatoes or fries.", tags: ["veg"] },
+        { name: "Kids Sandwich", price: "$12.00", desc: "Bacon, cheese and egg any style on an English muffin, with potatoes or fries." },
+        { name: "Kids Burger", price: "$13.00", desc: "Cheese, lettuce and tomato." },
+        { name: "Chicken Fingers", price: "$11.00", desc: "Served with potatoes or fries." },
+        { name: "Pancakes (2 pc)", price: "$10.00", tags: ["veg"] },
+        { name: "French Toast (2 pc)", price: "$10.00", tags: ["veg"] },
+        { name: "Kids Nutella Crepes", price: "$10.00", tags: ["veg"] },
+      ]
+    },
+    {
+      id: "appetizers",
+      title: "Appetizers",
+      blurb: "Something to start, or to share.",
+      items: [
+        { name: "Biscuits and Gravy", price: "$12.00", desc: "Bacon biscuits with pork sausage gravy." },
+        { name: "Beignets", price: "$7.95", tags: ["veg"] },
+        { name: "Chicken Tortilla Soup", price: "$8.95", desc: "Avocado and queso fresco." },
       ]
     },
     {
@@ -227,28 +321,54 @@ window.MBD = (function () {
       title: "Sides",
       blurb: "Because one more thing never hurt anyone.",
       items: [
-        { name: "Breakfast Potatoes", price: "$5.25", desc: "House-seasoned and roasted crisp.", tags: ["veg"], todo: true },
-        { name: "Applewood Bacon", price: "$5.75", desc: "Four thick-cut strips.", todo: true },
-        { name: "Chorizo", price: "$5.95", desc: "House chorizo, cooked to order.", tags: ["spicy"], todo: true },
-        { name: "Avocado", price: "$3.95", desc: "Sliced fresh.", tags: ["veg"], todo: true },
-        { name: "Chicken Tortilla Soup", price: "$8.45", desc: "Cup of our tortilla soup with avocado, crema and tortilla strips.", todo: true },
-        { name: "Toast or English Muffin", price: "$3.25", desc: "Buttered, your choice of bread.", tags: ["veg"], todo: true }
+        { name: "Waffle", price: "$8.00", tags: ["veg"] },
+        { name: "Sweet Plantains", price: "$6.00", tags: ["veg"] },
+        { name: "Bacon", price: "$6.50" },
+        { name: "Toast", price: "$2.00", tags: ["veg"] },
+        { name: "Pork Sausage", price: "$6.50" },
+        { name: "English Muffin (1 pc)", price: "$3.00", tags: ["veg"] },
+        { name: "Turkey Sausage", price: "$6.50" },
+        { name: "French Toast (1 pc)", price: "$5.00", tags: ["veg"] },
+        { name: "House Potatoes", price: "$6.00", tags: ["veg"] },
+        { name: "One Egg", price: "$3.00", tags: ["veg"] },
+        { name: "Avocado", price: "$5.00", tags: ["veg"] },
+        { name: "Substitute Egg Whites", price: "$3.00", tags: ["veg"] },
+        { name: "Side of Fruit", price: "$5.00", tags: ["veg"] },
+        { name: "Chicken Sausage", price: "$6.50" },
+        { name: "Fries", price: "$5.00", tags: ["veg"] },
       ]
     },
     {
       id: "drinks",
-      title: "Coffee & Drinks",
+      title: "Beverages",
       blurb: "The reason it's called Morning Breakfast Delight.",
       items: [
-        { name: "Espresso", price: "$3.75", desc: "Double shot, pulled to order.", todo: true },
-        { name: "Latte / Cappuccino", price: "$5.25", desc: "Hot or iced, with your choice of milk.", todo: true },
-        { name: "Café de Olla", price: "$4.75", desc: "Traditional Mexican coffee with cinnamon and piloncillo.", todo: true },
-        { name: "House Iced Tea", price: "$3.95", desc: "Brewed fresh daily, served over ice with lemon.", tags: ["veg"], todo: true },
-        { name: "Fresh Orange Juice", price: "$5.45", desc: "Squeezed to order.", tags: ["veg"], todo: true },
-        { name: "Horchata", price: "$4.50", desc: "Rice, cinnamon and vanilla, over ice.", tags: ["veg"], todo: true }
+        { name: "Carrot Juice", price: "$5.75", tags: ["veg"] },
+        { name: "Orange Juice", price: "$5.75", tags: ["veg"] },
+        { name: "Apple Juice", price: "$4.50", tags: ["veg"] },
+        { name: "Pink Lemonade", price: "$4.00", tags: ["veg"] },
+        { name: "Milk", price: "$4.00", tags: ["veg"] },
+        { name: "Mexican Hot Chocolate", price: "$4.50", tags: ["veg"] },
+        { name: "Chocolate Milk", price: "$4.00", tags: ["veg"] },
+        { name: "Coffee", price: "$4.25", tags: ["veg"] },
+        { name: "Cappuccino", price: "$4.75", desc: "Add a flavor for $1.00.", tags: ["veg"] },
+        { name: "Lattes", price: "$5.50", desc: "Add a flavor for $1.00.", tags: ["veg"] },
+        { name: "Espresso", price: "$4.75", tags: ["veg"] },
+        { name: "Iced Coffee", price: "$5.75", tags: ["veg"] },
+        { name: "Iced Tea", price: "$5.75", tags: ["veg"] },
+        { name: "Arnold Palmer Tea", price: "$5.50", tags: ["veg"] },
+        { name: "Hot Tea", price: "$3.75", tags: ["veg"] },
+        { name: "Horchata Latte", price: "$5.75", tags: ["veg"] },
+        { name: "Horchata Mazapán Latte", price: "$5.75", tags: ["veg"] },
+        { name: "Chai Latte", price: "$5.75", tags: ["veg"] },
+        { name: "Soda", price: "$3.50", desc: "Sprite, Pepsi, Diet Pepsi or Seven Up.", tags: ["veg"] },
+        { name: "Mexican Sodas", price: "$4.00", desc: "Jarritos.", tags: ["veg"] },
+        { name: "Smoothies", price: "$5.65", desc: "Guava, berry or mango.", tags: ["veg"] },
+        { name: "Virgin Bloody Mary", price: "$5.65", tags: ["veg"] },
       ]
-    }
+    },
   ];
+
 
   /* ---- Catering (ezCater) ---------------------------------- */
   const catering = {

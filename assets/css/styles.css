@@ -648,3 +648,13 @@ p  { text-wrap: pretty; }
 }
 .admin__save span { font-size: .92rem; color: rgba(255,255,255,.75); }
 .admin__save .btn { margin-left: auto; }
+
+/* Allergen and pricing notices, carried over from the printed menu. */
+.menu-advisory {
+  border-top: 3px dashed var(--cream-deep);
+  padding-top: 1.6rem;
+  display: grid; gap: .7rem;
+  font-size: .82rem; line-height: 1.55; color: var(--ink-muted);
+  max-width: 78ch;
+}
+.menu-advisory b { color: var(--cocoa); }

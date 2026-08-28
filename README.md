@@ -93,18 +93,22 @@ as a pill.
 |---|------|---------------|
 | 1 | **Delivery logos** | Official artwork from each platform's brand kit, if you want it instead of the wordmarks. |
 | 2 | **Chef bio** | The three paragraphs under `const chef` are written as placeholders. Replace with his real history. |
-| 3 | **Menu prices** | Every entry marked `todo: true` was reconstructed from public listings and needs a check against the live Toast menu. See below. |
+| 3 | **Catering prices** | Only the catering list is still reconstructed — the ezCater page could not be reached. Entries marked `todo: true` need checking against it. The food menu is transcribed from the printed menu and carries no flags. |
 | 4 | **Review names** | Quotes are real and pulled from public Google/Yelp listings, attributed generically. Add reviewer first names if you want them shown. |
 | 5 | **Brand fonts** | See below. |
 
-### Checking the flagged prices
+### Checking the flagged catering prices
 
 ```bash
 grep -n "todo: true" assets/data/content.js
 ```
 
-Everything that prints needs a confirmed price or wording. Delete the flag as you
-verify each one — it has no effect on the page, it is purely a checklist.
+Everything that prints is a catering item needing a confirmed price or wording.
+Delete the flag as you verify each one — it has no effect on the page, it is
+purely a checklist.
+
+The food menu itself came from the restaurant's printed menu: 114 dishes across
+14 sections, and every price on the site was checked back against that document.
 
 ### Brand fonts
 
