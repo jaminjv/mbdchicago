@@ -15,7 +15,8 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 const read = (p) => readFileSync(new URL("../" + p, import.meta.url), "utf8");
 
 const MIME = { svg: "image/svg+xml", jpg: "image/jpeg", jpeg: "image/jpeg",
-               png: "image/png", webm: "video/webm", mp4: "video/mp4" };
+               png: "image/png", webm: "video/webm", mp4: "video/mp4",
+               woff2: "font/woff2", otf: "font/otf" };
 const b64 = (p) => {
   const ext = p.split(".").pop().toLowerCase();
   const mime = MIME[ext];
@@ -32,11 +33,19 @@ function viewBody(file) {
   return html.slice(start, end).trim();
 }
 
-/* The @font-face blocks point at licensed files that only exist in the
-   full checkout, so a single-file bundle drops them and uses the
-   Google Fonts fallbacks instead. */
-const css = read("assets/css/styles.css")
-  .replace(/@font-face \{[\s\S]*?\}\n/g, "");
+/* A bundle cannot reach assets/fonts/, so each @font-face is rewritten to
+   carry its file inline. Blocks whose font is not in the repo are dropped
+   rather than left pointing at nothing. */
+const css = read("assets/css/styles.css").replace(
+  /@font-face \{[\s\S]*?\}\n/g,
+  (block) => {
+    const refs = [...block.matchAll(/url\("\.\.\/([^"]+)"\)/g)].map((m) => "assets/" + m[1]);
+    const present = refs.find((r) => existsSync(new URL("../" + r, import.meta.url)));
+    if (!present) return "";
+    // Keep only the format that matches the file being inlined.
+    const fmt = present.endsWith(".woff2") ? 'format("woff2")' : 'format("opentype")';
+    return block.replace(/src:[\s\S]*?;/, `src: url("${b64(present)}") ${fmt};`);
+  });
 const data = read("assets/data/content.js");
 const main = read("assets/js/main.js");
 
@@ -127,7 +136,7 @@ const out = `<title>Morning Breakfast Delight</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..900&family=Yellowtail&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..900&display=swap" rel="stylesheet">
 <style>
 ${css}
 

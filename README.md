@@ -108,10 +108,14 @@ verify each one — it has no effect on the page, it is purely a checklist.
 
 ### Brand fonts
 
-The design calls for **Nexa Script** (the logo's script) and **Google Sans Flex**
-(the wordmark font, confirmed from the brand PDF). Neither is free to serve, so
-the site currently falls back to **Yellowtail** and **Outfit** from Google Fonts,
-which are close in feel.
+**Nexa Script is in the repo and served from it** — `assets/fonts/nexa-script.woff2`,
+converted from the supplied OTF (38 KB → 23 KB), with the OTF kept alongside as a
+fallback source. Nothing is fetched from a third party for the display face, so it
+renders identically on every device.
+
+**Google Sans Flex** (the wordmark font, confirmed from the brand PDF) is still
+missing; the body text falls back to **Outfit** from Google Fonts, which is close
+in feel. Drop the file in and it takes over on its own.
 
 ### Why the type can differ between an iPad and a desktop
 

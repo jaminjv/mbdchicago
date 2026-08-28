@@ -4,14 +4,15 @@
    ============================================================ */
 
 /* --- Brand fonts -------------------------------------------------
-   Drop licensed files into assets/fonts/ and they take over
-   automatically. Until then the Google Fonts stack below stands in.
-     nexa-script.woff2       -> display script (logo voice)
-     google-sans-flex.woff2  -> UI / body
+   Nexa Script is served from this repo, so it renders the same on
+   every device with nothing to fetch from a third party.
+   Google Sans Flex is still missing — drop the file in and it takes
+   over on its own; until then the stack falls back to Outfit.
 ------------------------------------------------------------------ */
 @font-face {
   font-family: "Nexa Script";
-  src: url("../fonts/nexa-script.woff2") format("woff2");
+  src: url("../fonts/nexa-script.woff2") format("woff2"),
+       url("../fonts/nexa-script.otf") format("opentype");
   font-display: swap;
 }
 @font-face {
@@ -456,7 +457,17 @@ p  { text-wrap: pretty; }
   font-size: .84rem;
 }
 .footer__note { font-size: .78rem; opacity: .55; max-width: 60ch; margin-top: .8rem; }
-@media (max-width: 760px) { .footer__grid { grid-template-columns: 1fr; } }
+@media (max-width: 760px) {
+  /* One column reads better centred: the logo, the blurb, the socials and
+     both link lists line up on a single axis instead of hugging the left
+     edge under a centred mark. */
+  .footer { text-align: center; }
+  .footer__grid { grid-template-columns: 1fr; justify-items: center; gap: 2.2rem; }
+  .footer__logo { margin-inline: auto; }
+  .footer .socials { justify-content: center; }
+  .footer__bottom { justify-content: center; text-align: center; gap: .5rem; }
+  .footer__note { margin-inline: auto; }
+}
 
 /* --- Menu page --------------------------------------------------- */
 .page-head { background: var(--cocoa); color: var(--white); padding: clamp(3rem, 7vw, 5rem) 0 clamp(3.5rem, 7vw, 5rem); text-align: center; position: relative; overflow: hidden; }
