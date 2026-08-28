@@ -40,8 +40,10 @@ window.MBD = (function () {
   /* ---- Ordering platforms ---------------------------------
      Rendered as small logo tiles. `url` is where the tile links.
      Toast and Grubhub point at the restaurant's real store pages;
-     the other three point at that platform's search until the
-     store links exist — paste them in and nothing else changes.
+     the other three run a search until their store links exist.
+     Those searches use "Early Morning Delight" on purpose: the
+     delivery platforms have not been renamed yet, so the new name
+     finds nothing there. Switch them once the listings are updated.
      `brand` is the tile color, `wordmark` the text drawn on it.
      To use a platform's official artwork instead, add
      `logo: "assets/img/order-<name>.svg"` and it takes over.
@@ -55,19 +57,19 @@ window.MBD = (function () {
     {
       key: "doordash", name: "DoorDash", wordmark: "DoorDash", brand: "#ff3008", fg: "#ffffff",
       note: "Delivery",
-      url: "https://www.doordash.com/search/store/Morning%20Breakfast%20Delight%20Chicago",
+      url: "https://www.doordash.com/search/store/Early%20Morning%20Delight%20Chicago",
       searchOnly: true
     },
     {
       key: "ubereats", name: "Uber Eats", wordmark: "Uber Eats", brand: "#06c167", fg: "#0b1b12",
       note: "Delivery",
-      url: "https://www.ubereats.com/search?q=Morning%20Breakfast%20Delight",
+      url: "https://www.ubereats.com/search?q=Early%20Morning%20Delight",
       searchOnly: true
     },
     {
       key: "postmates", name: "Postmates", wordmark: "Postmates", brand: "#ffee00", fg: "#161616",
       note: "Delivery",
-      url: "https://postmates.com/search?q=Morning%20Breakfast%20Delight",
+      url: "https://postmates.com/search?q=Early%20Morning%20Delight",
       searchOnly: true
     },
     {

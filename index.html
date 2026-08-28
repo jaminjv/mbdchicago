@@ -92,10 +92,6 @@
       <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Open 7 days</li>
       <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1116 0z"/><circle cx="12" cy="10" r="3"/></svg>North Center, Chicago</li>
     </ul>
-    <button class="hero__play" type="button" hidden>
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
-      <span>Play the video</span>
-    </button>
   </div>
   <div class="hero__scroll" aria-hidden="true">Scroll
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
@@ -180,18 +176,27 @@
 <section class="section section--sunny" id="visit">
   <div class="wrap">
     <div class="visit">
-      <div>
+      <div class="visit__intro">
         <span class="eyebrow" style="background:rgba(48,34,29,.12);color:#30221d">Come see us</span>
         <h2>1924 W Irving&nbsp;Park&nbsp;Rd</h2>
         <p class="lead" style="color:rgba(48,34,29,.72)">
           Just east of Damen in North Center. Walk in, grab a seat, and let the kitchen do the rest.
         </p>
         <div class="contact-list" data-contact></div>
-        <ul class="hours mt-lg" data-hours></ul>
         <h4 style="margin-top:2rem;font-size:.82rem;letter-spacing:.16em;text-transform:uppercase;opacity:.6">Follow along</h4>
         <div class="socials" style="margin-top:.8rem" data-socials></div>
       </div>
-      <div class="map-frame" data-map></div>
+
+      <div class="visit__side">
+        <div class="map-frame" data-map></div>
+        <section class="hours" aria-labelledby="hours-title">
+          <header class="hours__head">
+            <h3 id="hours-title">Hours</h3>
+            <span class="hours__status" data-open-state>Checking hours…</span>
+          </header>
+          <ul class="hours__list" data-hours></ul>
+        </section>
+      </div>
     </div>
   </div>
 </section>

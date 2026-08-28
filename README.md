@@ -113,6 +113,30 @@ The design calls for **Nexa Script** (the logo's script) and **Google Sans Flex*
 the site currently falls back to **Yellowtail** and **Outfit** from Google Fonts,
 which are close in feel.
 
+### Why the type can differ between an iPad and a desktop
+
+Both faces are loaded from Google Fonts over the network. When that request
+succeeds the rendering is the same everywhere. When it fails — a content
+blocker, a DNS filter, Lockdown Mode, a captive network — the browser silently
+falls back to the next family in the stack, and those fallbacks are
+platform-specific: `system-ui` is SF Pro on an iPad and Segoe UI or Roboto on a
+desktop, and `cursive` is Snell Roundhand on iOS, which looks nothing like
+Yellowtail. Same CSS, very different page.
+
+There is no CSS fix for that, because the cause is the font never arriving. The
+durable answer is to stop depending on a third party: download the two families
+and serve them from this repo.
+
+1. Get the files (Google Fonts → *Download family*, or `google-webfonts-helper`
+   for ready-made woff2), and put them in `assets/fonts/`.
+2. Add an `@font-face` for each, matching the names already used in
+   `--font-sans` and `--font-script`.
+3. Drop the `<link href="https://fonts.googleapis.com/...">` from the three
+   HTML files.
+
+After that the page carries its own type and renders identically offline, on a
+locked-down network, and on any device.
+
 To switch to the real thing, drop the licensed files in:
 
 ```

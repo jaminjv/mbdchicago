@@ -28,6 +28,12 @@
     close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>'
   };
 
+  const tagIcon = {
+    spicy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 4c0-1 1-2 2-2s2 .8 2 2c0 1.4-1.2 2-1.2 2"/><path d="M15.4 6C13 6 5 8.6 5 15.2 5 19 7.6 21 10.4 21 15.6 21 19 15.4 19 10.6 19 8 17.6 6 15.4 6z"/></svg>',
+    veg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20c0-8 5-14 16-15 1 10-4 16-12 16H4z"/><path d="M4 20c3-5 7-8 11-9.5"/></svg>',
+    favorite: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.4l6.5-.9L12 2.6z"/></svg>'
+  };
+
   const stars = (n = 5) => `<span class="stars" aria-hidden="true">${icon.star.repeat(n)}</span>`;
 
   /* ---------- Mobile nav ----------------------------------- */
@@ -51,25 +57,18 @@
   }
 
   /* ---------- Hero video -----------------------------------
-     The banner is silent on purpose: the source file carries no
-     audio track and the element stays muted, which is also what
-     lets it autoplay at all.
-
-     Autoplay is still refusable — iOS Low Power Mode blocks it
-     outright, and Safari will not autoplay inside an iframe that
-     was not granted the autoplay permission. Neither is something
-     the page can talk its way out of, so when play() is rejected
-     we surface a button; a real tap is always allowed.
+     Silent by design: the source file carries no audio track and the
+     element stays muted, which is also what permits autoplay.
 
      data-cut trims the loop without touching the file — the clip
      restarts at that many seconds instead of running to the end. */
   function initHero() {
     const video = $(".hero__media video");
     if (!video) return;
-    const cue = $(".hero__play");
 
     video.muted = true;
     video.playsInline = true;
+    video.loop = true;
 
     const cut = parseFloat(video.dataset.cut);
     if (cut > 0) {
@@ -79,30 +78,14 @@
       video.addEventListener("seeked", () => { if (video.paused) video.play().catch(() => {}); });
     }
 
-    const showCue = () => { if (cue) cue.hidden = false; };
-    const hideCue = () => { if (cue) cue.hidden = true; };
+    const start = () => { const p = video.play(); if (p && p.catch) p.catch(() => {}); };
+    start();
+    video.addEventListener("loadeddata", start);
+    video.addEventListener("canplay", start);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) start(); });
 
-    // A bundle built with --no-video ships the poster and no source at all.
-    // There is nothing to start, so offer nothing and leave the still frame.
-    if (!video.querySelector("source[src], source[data-src]") && !video.src) {
-      hideCue();
-      return;
-    }
-
-    const attempt = () => {
-      const p = video.play();
-      if (!p || !p.then) return;
-      p.then(hideCue).catch(showCue);
-    };
-
-    attempt();
-    video.addEventListener("loadeddata", attempt);
-    video.addEventListener("playing", hideCue);
-    document.addEventListener("visibilitychange", () => { if (!document.hidden) attempt(); });
-    if (cue) cue.addEventListener("click", () => { video.play().then(hideCue).catch(() => {}); });
-
-    // If the file is missing or undecodable, keep the poster and drop the cue.
-    video.addEventListener("error", () => { video.style.display = "none"; hideCue(); }, true);
+    // If the file is missing or undecodable, the poster carries the hero.
+    video.addEventListener("error", () => { video.style.display = "none"; }, true);
   }
 
   /* ---------- Hours ---------------------------------------- */
@@ -110,11 +93,14 @@
     const list = $("[data-hours]");
     if (!list) return;
     const today = new Date().getDay();
-    list.innerHTML = D.business.hours.map((h) => `
-      <li data-today="${h.idx === today}">
-        <span>${esc(h.day)}</span>
-        <strong>${esc(h.open)} – ${esc(h.close)}</strong>
-      </li>`).join("");
+    list.innerHTML = D.business.hours.map((h) => {
+      const isToday = h.idx === today;
+      return `
+      <li data-today="${isToday}">
+        <span class="hours__day">${esc(h.day)}${isToday ? '<em>Today</em>' : ""}</span>
+        <span class="hours__time">${esc(h.open)} – ${esc(h.close)}</span>
+      </li>`;
+    }).join("");
   }
 
   function renderOpenState() {
@@ -132,6 +118,7 @@
     };
     const mins = now.getHours() * 60 + now.getMinutes();
     const open = mins >= parse(today.open) && mins < parse(today.close);
+    el.dataset.open = String(open);
     el.textContent = open ? `Open now until ${today.close}` : `Opens ${today.day} at ${today.open}`;
   }
 
@@ -285,6 +272,11 @@
     : t === "spicy" ? "Spicy"
     : t === "favorite" ? "Fan favorite" : t;
 
+  const tagChip = (t) => {
+    const icon = tagIcon[t] || "";
+    return `<span class="${tagClass(t)}">${icon}${esc(tagLabel(t))}</span>`;
+  };
+
   const dishCard = (d) => `
     <article class="dish reveal">
       <div class="dish__top">
@@ -293,7 +285,7 @@
       </div>
       <p class="dish__desc">${esc(d.desc)}</p>
       ${d.tags && d.tags.length
-        ? `<div class="dish__tags">${d.tags.map((t) => `<span class="${tagClass(t)}">${esc(tagLabel(t))}</span>`).join("")}</div>`
+        ? `<div class="dish__tags">${d.tags.map(tagChip).join("")}</div>`
         : ""}
     </article>`;
 
@@ -355,9 +347,7 @@
       host.innerHTML = `
         <a href="https://www.google.com/maps/search/?api=1&query=${esc(b.mapsQuery)}" target="_blank" rel="noopener">
           ${icon.pin}<span>${esc(b.address)}<br><small style="opacity:.65">${esc(b.neighborhood)}</small></span></a>
-        <a href="${esc(b.phoneHref)}">${icon.phone}<span>${esc(b.phone)}</span></a>
-        <p>${icon.clock}<span data-open-state>Checking hours…</span></p>`;
-      renderOpenState();
+        <a href="${esc(b.phoneHref)}">${icon.phone}<span>${esc(b.phone)}</span></a>`;
     });
   }
 
@@ -379,6 +369,7 @@
     initNav();
     initHero();
     renderHours();
+    renderOpenState();
     renderOrdering();
     renderSpecials();
     renderChef();
