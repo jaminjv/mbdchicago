@@ -13,14 +13,15 @@
    the 24pt text grade — which takes the woff2 from 1.9 MB to 92 KB.
    Licensed under the OFL; see GoogleSansFlex-OFL.txt.
 
-   Nexa Script is the Bold cut, whose stroke weight matches the logo
-   lockup. It is currently the PERSONAL USE build — a commercial
-   licence is needed before launch. See NexaScript-LICENCE.txt.
+   Nexa Script is licensed from Fontfabric. Five cuts are in
+   assets/fonts/ — thin, light, regular, semibold, heavy — and the
+   design uses semibold, the closest of them to the stroke weight of
+   the logo lockup. To try another, point the src below at that file;
+   only the declared cut is ever downloaded.
 ------------------------------------------------------------------ */
 @font-face {
   font-family: "Nexa Script";
-  src: url("../fonts/nexa-script.woff2") format("woff2"),
-       url("../fonts/nexa-script.otf") format("opentype");
+  src: url("../fonts/nexa-script-semibold.woff2") format("woff2");
   font-display: swap;
 }
 @font-face {

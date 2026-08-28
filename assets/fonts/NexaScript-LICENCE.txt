@@ -1,18 +1,15 @@
-License: Personal Use Only
-Link: https://befonts.com/nexa-script.html
+Nexa Script — Fontfabric
+https://www.fontfabric.com/fonts/nexa-script/
 
---------------------------------------------------------------------
-NOTE FOR THIS PROJECT
+Licensed by the site owner. Five cuts are included:
 
-The file shipped as nexa-script.woff2 is Nexa Script Bold from the
-befonts package above, which is marked PERSONAL USE ONLY. A restaurant
-website is commercial use, so a commercial licence from Fontfabric is
-required before this site goes public.
+  nexa-script-thin.woff2
+  nexa-script-light.woff2
+  nexa-script-regular.woff2
+  nexa-script-semibold.woff2   <- the one the site uses
+  nexa-script-heavy.woff2
 
-  https://www.fontfabric.com/fonts/nexa-script/
-
-nexa-script-free.otf is the free cut kept alongside it. It is clean for
-commercial use but has no real capital letters — all 26 uppercase
-glyphs duplicate their lowercase outlines — so headings set in title
-case render as lowercase. Swap it in as a stopgap by pointing the
-@font-face at it.
+Semibold was chosen because its stroke weight is the closest of these
+to the logo lockup. Bold would be a shade closer still, but it was not
+part of the licensed set supplied; adding that file and repointing the
+@font-face in assets/css/styles.css is all it would take.
