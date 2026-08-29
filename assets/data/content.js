@@ -4,12 +4,10 @@
    This is the only file you need to edit for routine updates:
    weekly specials, menu items, prices, reviews and order links.
 
-   VERIFICATION FLAG
-   The food menu is transcribed from the restaurant's printed menu,
-   so it carries no flags. What remains flagged with `todo: true` is
-   the catering list, reconstructed from the ezCater listing, which
-   could not be reached from here. Remove each flag as it is checked
-   against the real ezCater page. See README.md.
+   Both menus are transcribed from source documents — the printed
+   menu for the food, the ezCater listing for catering — so nothing
+   here is a reconstruction any more. What is still placeholder is
+   the chef's biography, marked with `todo: true`.
    ============================================================ */
 
 window.MBD = (function () {
@@ -370,23 +368,32 @@ window.MBD = (function () {
   ];
 
 
-  /* ---- Catering (ezCater) ---------------------------------- */
+  /* ---- Catering (ezCater) ----------------------------------
+     Transcribed from the restaurant's ezCater listing: section
+     order and descriptions from its structured data, prices and
+     serving sizes from the page itself. Dietary chips are the ones
+     ezCater shows. Items with no serving size are priced per unit
+     there, so none is claimed here.
+  ---------------------------------------------------------- */
   const catering = {
     orderUrl: "https://www.ezcater.com/catering/early-morning-delight-3",
     facts: [
-      { value: "15", label: "People served by each tray" },
-      { value: "24 hrs", label: "Typical lead time on large orders" },
-      { value: "Delivery", label: "Setup and delivery across Chicagoland" }
+      { value: "$100", label: "Order minimum, food and drink" },
+      { value: "$25+", label: "Delivery fee, by distance" },
+      { value: "10–30", label: "Servings per tray, by dish" }
     ],
     sections: [
       {
         id: "cater-skillets",
         title: "Breakfast Skillets",
-        blurb: "Full trays, each serving about 15 people.",
+        blurb: "Full trays of the skillets people already line up for.",
         items: [
-          { name: "Malaka Skillet Tray", price: "$145.00", desc: "Scrambled eggs with mixed mushrooms, roasted tomato, spinach, potatoes, caramelized onion, mozzarella and cream cheese.", tags: ["Serves 15", "veg"] },
-          { name: "Steak Fajita Skillet Tray", price: "$145.00", desc: "Steak and fajita mix with potatoes, Chihuahua cheese, queso fresco, salsa verde, sour cream and pico de gallo.", tags: ["Serves 15"] },
-          { name: "Mushroom Skillet Tray", price: "$145.00", desc: "Mixed mushrooms, spinach, roasted tomato and potatoes with scrambled eggs and melted cheese.", tags: ["Serves 15", "veg"] }
+          { name: "Mushroom Skillet", price: "$145.00", desc: "Scrambled eggs with mixed mushrooms, roasted tomatoes, spinach, potatoes, caramelized onion, mozzarella cheese, and cream cheese.", tags: ["Serves 15", "veg"] },
+          { name: "Malaka Skillet", price: "$145.00", desc: "Scrambled eggs with Greek sausage, tomatoes, spinach, black olives, caramelized onions, potatoes, and feta cheese.", tags: ["Serves 15"] },
+          { name: "Steak Fajita Skillet", price: "$145.00", desc: "Scrambled eggs with steak, mix bell pepper, chihuahua cheese, and queso fresco. Served with sour cream, pico de dallo, and salsa verde.", tags: ["Serves 15"] },
+          { name: "Papi Skillet", price: "$145.00", desc: "Scrambled eggs with chicken Tinga, bell peppers, onions, and potatoes. Served with sour cream, pico de gallo, and salsa verde.", tags: ["Serves 15"] },
+          { name: "Mr. Pancho Skillet", price: "$145.00", desc: "Scrambled eggs with chorizo, corn, roasted poblano peppers, tomatoes, potatoes, chihuahua cheese, and queso fresco.", tags: ["Serves 15"] },
+          { name: "Pork Belly Skillet", price: "$145.00", desc: "Scrambled eggs with bell peppers, onions, jalapeños, chihuahua cheese, and queso fresco.", tags: ["Serves 15"] },
         ]
       },
       {
@@ -394,8 +401,10 @@ window.MBD = (function () {
         title: "Breakfast Sandwiches & Hashes",
         blurb: "Easy to hand out, easy to eat standing up.",
         items: [
-          { name: "Breakfast Sandwich Platter", price: "$135.00", desc: "Assorted egg and cheese sandwiches on brioche and croissants with bacon, sausage and ham.", tags: ["Serves 15"], todo: true },
-          { name: "Corned Beef Hash Tray", price: "$145.00", desc: "House corned beef hash with potatoes, peppers and onion.", tags: ["Serves 15"], todo: true }
+          { name: "Breakfast Sandwich", price: "$12.00", desc: "Your choice of protein, fried egg, and cheddar cheese on your choice of bread." },
+          { name: "Hash & Eggs", price: "$145.00", desc: "With corned beef, onion, and diced potatoes.", tags: ["Serves 15"] },
+          { name: "Vegan Hash", price: "$145.00", desc: "With mixed veggies, chipotle tomato sauce, and tofu.", tags: ["Serves 15", "Vegan"] },
+          { name: "Chorizo Hash", price: "$145.00", desc: "With Mexican sausage, roasted poblanos, corn, caramelized onions, bell pepper, bacon, potatoes, and queso fresco. Served with scrambled eggs, sour cream, and salsa verde.", tags: ["Serves 15"] },
         ]
       },
       {
@@ -403,51 +412,69 @@ window.MBD = (function () {
         title: "Breakfast Sweets",
         blurb: "The part of the spread that disappears first.",
         items: [
-          { name: "French Toast Tray", price: "$125.00", desc: "Thick-cut French toast with butter, syrup and fresh berries on the side.", tags: ["Serves 15"], todo: true },
-          { name: "Pancake Tray", price: "$115.00", desc: "Buttermilk pancakes with butter and warm syrup.", tags: ["Serves 15", "veg"], todo: true },
-          { name: "Fresh Fruit Platter", price: "$85.00", desc: "Seasonal fruit, cut fresh that morning.", tags: ["Serves 15", "veg"], todo: true }
+          { name: "Fruit Bar", price: "$60.00", desc: "With assorted seasonal fruit.", tags: ["Serves 15", "veg"] },
+          { name: "Beignets", price: "$55.00", desc: "With Mexican caramel sauce, espresso vanilla cream sauce, raspberry sauce, and powdered sugar.", tags: ["Serves 30", "veg"] },
+          { name: "Yogurt Fruit Bar", price: "$60.00", desc: "With mixed fruit, granola, and plain yogurt.", tags: ["Serves 15", "veg"] },
+          { name: "French Toast", price: "$65.00", desc: "Served with syrup and butter.", tags: ["Serves 10", "veg"] },
         ]
       },
       {
         id: "cater-sides",
         title: "Breakfast Sides",
-        blurb: "Round out the table.",
+        blurb: "Priced per person, to round out the table.",
         items: [
-          { name: "Breakfast Potatoes Tray", price: "$65.00", desc: "House-seasoned roasted potatoes.", tags: ["Serves 15", "veg"], todo: true },
-          { name: "Bacon & Sausage Tray", price: "$85.00", desc: "Applewood bacon and house sausage links.", tags: ["Serves 15"], todo: true },
-          { name: "Scrambled Eggs Tray", price: "$75.00", desc: "Fluffy scrambled eggs, kept hot.", tags: ["Serves 15", "veg"], todo: true }
-        ]
-      },
-      {
-        id: "cater-tacos",
-        title: "Tacos & Wraps",
-        blurb: "Build-your-own goes over well with a crowd.",
-        items: [
-          { name: "Breakfast Taco Bar", price: "$135.00", desc: "Scrambled eggs, potatoes, cheese, chorizo and chicken with warm tortillas, salsas and crema.", tags: ["Serves 15"], todo: true },
-          { name: "Wrap Platter", price: "$125.00", desc: "Assorted breakfast and lunch wraps, cut and arranged.", tags: ["Serves 15"], todo: true }
+          { name: "Bacon", price: "$2.75" },
+          { name: "House Potatoes", price: "$55.00", tags: ["Serves 30", "veg"] },
+          { name: "Turkey Sausage", price: "$2.75" },
+          { name: "Pork Sausage", price: "$2.75" },
+          { name: "Chicken Sausage", price: "$2.75" },
         ]
       },
       {
         id: "cater-italian",
         title: "Italian Entrees",
-        blurb: "For lunch meetings that run long.",
+        blurb: "For lunch meetings and evening events.",
         items: [
-          { name: "Baked Pasta Tray", price: "$135.00", desc: "Baked pasta in house marinara with mozzarella and fresh basil.", tags: ["Serves 15", "veg"], todo: true },
-          { name: "Chicken Parmesan Tray", price: "$155.00", desc: "Breaded chicken cutlets with marinara and melted mozzarella.", tags: ["Serves 15"], todo: true }
+          { name: "Chicken Marsala", price: "$160.00", desc: "Golden pan-fried chicken cutlets and mushrooms in a rich Marsala wine sauce.", tags: ["Serves 15"] },
+          { name: "Spaghetti Marinara W/ Seafood", price: "$130.00", desc: "Seafood marinara mix with prawns, shrimp, calamari, fish, and mussels tossed in tomato sauce.", tags: ["Serves 15"] },
+          { name: "Chicken Vesuvio", price: "$160.00", desc: "Crispy chicken pieces, potato wedges, garlic, onion, and white wine.", tags: ["Serves 15"] },
+          { name: "Lasagna", price: "$120.00", desc: "With a creamy ricotta cheese mixture, meat sauce, and mozzarella cheese.", tags: ["Serves 15"] },
+          { name: "Cheesy Garlic Bread", price: "$60.00", desc: "Cheese and soft bread on the inside with a crunchy crust on the outside.", tags: ["Serves 15", "veg"] },
+          { name: "Spaghetti & Meatballs", price: "$120.00", desc: "Homemade Italian-style pasta sauce with beef meatballs.", tags: ["Serves 15"] },
+          { name: "Chicken Alfredo Pasta", price: "$160.00", desc: "Drenched in an ultra-rich and creamy sauce, topped with strips of seared chicken.", tags: ["Serves 15"] },
+          { name: "Mostaccioli", price: "$160.00", desc: "Tender pasta tossed in Italian meat sauce, topped with a combination of creamy ricotta, Parmesan, and mozzarella cheeses.", tags: ["Serves 15"] },
+        ]
+      },
+      {
+        id: "cater-tacos",
+        title: "Tacos",
+        blurb: "Build-your-own goes over well with a crowd.",
+        items: [
+          { name: "Build-Your- Own Taco Bar", price: "$25.00", desc: "Everything you need to build your own tacos including, corn & flour tortillas, steak, pastor, tinga, beans, rice, guacamole, queso fresco, chihuahua cheese, verde & roja salsas, onions, cilantro, romaine lettuce, and pico de gallo. Served with chips." },
+        ]
+      },
+      {
+        id: "cater-wraps",
+        title: "Wraps",
+        blurb: "Priced per person, easy to hand round.",
+        items: [
+          { name: "Tofu Wrap", price: "$11.00", tags: ["veg"] },
+          { name: "Chicken Wrap", price: "$11.00", desc: "With grilled chicken, lettuce, tomatoes, onions, mango chutney, guacamole, and salsa verde." },
+          { name: "Fish Wrap", price: "$11.00", desc: "With seasoned tilapia." },
         ]
       },
       {
         id: "cater-beverages",
         title: "Beverages",
-        blurb: "Coffee travels. So does the iced tea.",
+        blurb: "Coffee travels. So does the orange juice.",
         items: [
-          { name: "Coffee Traveler", price: "$28.00", desc: "96 oz of house coffee with cups, cream and sugar.", tags: ["Serves 12"], todo: true },
-          { name: "Fresh Orange Juice Carafe", price: "$32.00", desc: "Squeezed that morning.", tags: ["Serves 10", "veg"], todo: true },
-          { name: "Iced Tea Gallon", price: "$24.00", desc: "House-brewed, with lemon and cups.", tags: ["Serves 12", "veg"], todo: true }
+          { name: "Coffee", price: "$31.00", desc: "Your choice of coffee type.", tags: ["Serves 10"] },
+          { name: "Gallon Orange Juice", price: "$31.00", tags: ["Serves 10"] },
         ]
-      }
+      },
     ]
   };
+
 
   return { business, ordering, social, specials, chef, reviews, menu, catering };
 })();

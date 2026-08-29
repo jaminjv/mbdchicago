@@ -93,22 +93,26 @@ as a pill.
 |---|------|---------------|
 | 1 | **Delivery logos** | Official artwork from each platform's brand kit, if you want it instead of the wordmarks. |
 | 2 | **Chef bio** | The three paragraphs under `const chef` are written as placeholders. Replace with his real history. |
-| 3 | **Catering prices** | Only the catering list is still reconstructed — the ezCater page could not be reached. Entries marked `todo: true` need checking against it. The food menu is transcribed from the printed menu and carries no flags. |
+| 3 | *(nothing — both menus are transcribed from source documents)* | |
 | 4 | **Review names** | Quotes are real and pulled from public Google/Yelp listings, attributed generically. Add reviewer first names if you want them shown. |
 | 5 | **Brand fonts** | See below. |
 
-### Checking the flagged catering prices
+### Where the menu data comes from
+
+Both menus are transcriptions, not reconstructions:
+
+- **Food menu** — the restaurant's printed menu PDF. 114 dishes in 14 sections;
+  every price was checked back against that document.
+- **Catering** — the ezCater listing. 33 items in 8 sections, with section order
+  and descriptions from its structured data and prices, serving sizes and
+  dietary chips from the page; every price was checked back against it.
 
 ```bash
 grep -n "todo: true" assets/data/content.js
 ```
 
-Everything that prints is a catering item needing a confirmed price or wording.
-Delete the flag as you verify each one — it has no effect on the page, it is
-purely a checklist.
-
-The food menu itself came from the restaurant's printed menu: 114 dishes across
-14 sections, and every price on the site was checked back against that document.
+The only thing that still prints is the chef's biography, which is placeholder
+prose.
 
 ### Brand fonts
 
