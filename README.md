@@ -232,11 +232,12 @@ from the **[Actions tab](https://github.com/jaminjv/mbdchicago/actions)** (or pu
 any commit) and the site goes live at:
 
 ```
-https://jaminjv.github.io/mbdchicago/
+https://mbdchicago.com
 ```
 
-When the real domain is ready, add it under Settings → Pages → Custom domain, and
-update the `<link rel="canonical">` in `index.html`.
+The `CNAME` file at the repository root is what claims that domain; GitHub reads
+it on every deploy. Changing the domain means editing that file *and* the
+canonical and Open Graph URLs in the three HTML pages.
 
 ## The banner video
 
