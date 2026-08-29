@@ -45,6 +45,15 @@ jobs:
             } >> "$GITHUB_STEP_SUMMARY"
           fi
 
+      # Browsers cache assets/js/main.js and assets/data/content.js by URL,
+      # and GitHub Pages does not let us send our own cache headers, so a
+      # change to the menu or a section switch could otherwise sit here
+      # while visitors kept running the copy they already had. Stamping the
+      # links with a hash of each file changes the URL whenever the file
+      # changes. Done at deploy time so the committed HTML stays clean.
+      - if: steps.check.outputs.enabled == 'true'
+        run: node tools/stamp-assets.mjs
+
       - if: steps.check.outputs.enabled == 'true'
         uses: actions/configure-pages@v5
       - if: steps.check.outputs.enabled == 'true'

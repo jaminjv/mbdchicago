@@ -288,6 +288,27 @@ The `CNAME` file at the repository root is what claims that domain; GitHub reads
 it on every deploy. Changing the domain means editing that file *and* the
 canonical and Open Graph URLs in the three HTML pages.
 
+### Why an edit shows up straight away
+
+A browser that has already downloaded `assets/data/content.js` has no reason to
+ask for it again, and GitHub Pages does not let us send our own cache headers.
+Left alone, that means a price change or a hidden section can be live on the
+server while returning visitors still see the old page.
+
+So the deploy runs `tools/stamp-assets.mjs`, which rewrites every local CSS and
+JS link to carry a hash of that file's contents:
+
+```html
+<script src="assets/data/content.js?v=b79436c0"></script>
+```
+
+Edit the file and the hash changes, so the URL changes, so the browser has to
+fetch it. Nothing to remember and nothing to run by hand — it happens at deploy
+time, which is why the committed HTML has no `?v=` in it.
+
+If you ever do see a stale page, it is the HTML itself being held for up to ten
+minutes (GitHub's own cache time); a reload after that picks everything up.
+
 ## The banner video
 
 `assets/video/hero.mp4` is the banner reel — 1920x1080, about 12 seconds,
