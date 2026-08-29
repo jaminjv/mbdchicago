@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# The price editor is for staff and has nothing to index.
+Disallow: /admin.html
+
+Sitemap: https://mbdchicago.com/sitemap.xml

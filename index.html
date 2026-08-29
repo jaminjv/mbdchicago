@@ -20,15 +20,68 @@
 {
   "@context": "https://schema.org",
   "@type": "Restaurant",
+  "@id": "https://mbdchicago.com/#restaurant",
   "name": "Morning Breakfast Delight",
   "alternateName": "Early Morning Delight",
-  "servesCuisine": ["Breakfast", "Brunch", "Mexican"],
-  "address": { "@type": "PostalAddress", "streetAddress": "1924 W Irving Park Rd", "addressLocality": "Chicago", "addressRegion": "IL", "postalCode": "60613", "addressCountry": "US" },
-  "telephone": "+1-872-206-2610",
-  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "reviewCount": "200" },
-  "openingHours": ["Mo-Fr 08:00-16:00", "Sa-Su 07:00-16:00"],
+  "description": "Breakfast and brunch with a Mexican heart in North Center, Chicago.",
   "url": "https://mbdchicago.com/",
-  "sameAs": ["https://www.facebook.com/mbdchicago/", "https://www.instagram.com/mbdchicago/"]
+  "menu": "https://mbdchicago.com/menu.html",
+  "servesCuisine": [
+    "Breakfast",
+    "Brunch",
+    "Mexican"
+  ],
+  "priceRange": "$$",
+  "image": [
+    "https://mbdchicago.com/assets/img/og-cover.jpg"
+  ],
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "1924 W Irving Park Rd",
+    "addressLocality": "Chicago",
+    "addressRegion": "IL",
+    "postalCode": "60613",
+    "addressCountry": "US"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 41.9541,
+    "longitude": -87.6797
+  },
+  "hasMap": "https://www.google.com/maps/search/?api=1&query=1924+W+Irving+Park+Rd,+Chicago,+IL+60613",
+  "telephone": "+1-872-206-2610",
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday"
+      ],
+      "opens": "08:00",
+      "closes": "16:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Saturday",
+        "Sunday"
+      ],
+      "opens": "07:00",
+      "closes": "16:00"
+    }
+  ],
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.9",
+    "reviewCount": "200"
+  },
+  "sameAs": [
+    "https://www.facebook.com/mbdchicago/",
+    "https://www.instagram.com/mbdchicago/"
+  ]
 }
 </script>
 </head>

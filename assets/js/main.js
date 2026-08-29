@@ -304,7 +304,10 @@
     const nav = $(navSel);
     const body = $(bodySel);
     if (!body) return;
-    body.innerHTML = sections.map(menuSection).join("");
+    // tools/prerender.mjs bakes this markup into the page at build time so
+    // the dishes are in the HTML source. Re-rendering would only produce
+    // the same nodes again, so leave them and wire up the rest.
+    if (!body.querySelector(".dish")) body.innerHTML = sections.map(menuSection).join("");
     if (nav) {
       nav.innerHTML = sections.map((s) =>
         `<li><a href="#${esc(s.id)}">${esc(s.title)}</a></li>`).join("");

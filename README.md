@@ -20,6 +20,34 @@ dist/preview.html   Generated single-file bundle (see below)
 
 ---
 
+## Search visibility
+
+Two things the build takes care of, and one that it cannot.
+
+**The menu ships in the HTML.** `tools/prerender.mjs` bakes the rendered dish
+markup into `menu.html` and `catering.html`, so a crawler sees all 147 items
+without executing JavaScript. Before this the pages served an empty
+`<main data-menu>` and the entire menu — the most searchable thing the
+restaurant has — existed only after JS ran. **Re-run it after any change to the
+menu data:**
+
+```bash
+node tools/prerender.mjs
+```
+
+It loads each page in a real browser and writes back what the page itself
+rendered, so the baked markup cannot drift from the templates.
+
+**Structured data** is generated from the same `content.js` the pages render
+from: a full `Restaurant` on the home page with hours, location and rating, and
+a `Menu` on each of the other two listing every section and price. That is what
+lets Google show the menu directly in results.
+
+**What the code cannot fix** is which site Google already trusts for this
+business. That is settled by the Google Business Profile's website field, by
+whether the old domains redirect here, and by the links on Yelp, TripAdvisor and
+the delivery platforms. See the notes below.
+
 ## Editing content
 
 **`assets/data/content.js` is the only file needed for routine updates.**
