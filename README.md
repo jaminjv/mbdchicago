@@ -53,6 +53,23 @@ the delivery platforms. See the notes below.
 **`assets/data/content.js` is the only file needed for routine updates.**
 It is a plain JavaScript object — change the text between the quotes and save.
 
+### Turning a section off
+
+`const show` at the top of the content file hides a homepage section without
+deleting anything:
+
+```js
+const show = {
+  specials: false   // "Special of the week" — hidden for now
+};
+```
+
+Set it back to `true` and the section returns, along with its nav link and its
+footer link. While it is off, those links are removed too, so nothing scrolls to
+an anchor that is not on the page, and the chef section — which normally sits
+flush beneath the specials because they share a dark background — gets its top
+padding back.
+
 ### The weekly specials
 
 Find `const specials = [...]`. There are three entries: the first renders as the

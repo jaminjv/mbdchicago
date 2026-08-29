@@ -142,7 +142,22 @@
   }
 
   /* ---------- Specials ------------------------------------- */
+  /* Switched off in content.js: the section leaves the page along
+     with every link pointing at it, so nothing scrolls to an anchor
+     that is no longer there. */
+  function hideSpecials() {
+    const section = document.getElementById("specials");
+    if (section) section.remove();
+    $$('a[href$="#specials"]').forEach((a) => a.remove());
+
+    // The chef section is flush under the specials because the two
+    // share a dark background. Alone, it needs its top padding back.
+    const chef = document.getElementById("chef");
+    if (chef) chef.style.paddingTop = "";
+  }
+
   function renderSpecials() {
+    if (D.show && D.show.specials === false) { hideSpecials(); return; }
     const grid = $("[data-specials]");
     if (!grid) return;
     grid.innerHTML = D.specials.map((s, i) => `

@@ -36,6 +36,15 @@ window.MBD = (function () {
     ]
   };
 
+  /* ---- Section switches -----------------------------------
+     Turn a homepage section off without deleting anything. Set it
+     back to true and the section, its nav link and its footer link
+     all come back exactly as they were.
+  ---------------------------------------------------------- */
+  const show = {
+    specials: false   // "Special of the week" — hidden for now
+  };
+
   /* ---- Ordering platforms ---------------------------------
      Rendered as small logo tiles. `url` is where the tile links.
      Toast and Grubhub point at the restaurant's real store pages;
@@ -476,5 +485,5 @@ window.MBD = (function () {
   };
 
 
-  return { business, ordering, social, specials, chef, reviews, menu, catering };
+  return { business, show, ordering, social, specials, chef, reviews, menu, catering };
 })();

@@ -2521,6 +2521,15 @@ window.MBD = (function () {
     ]
   };
 
+  /* ---- Section switches -----------------------------------
+     Turn a homepage section off without deleting anything. Set it
+     back to true and the section, its nav link and its footer link
+     all come back exactly as they were.
+  ---------------------------------------------------------- */
+  const show = {
+    specials: false   // "Special of the week" — hidden for now
+  };
+
   /* ---- Ordering platforms ---------------------------------
      Rendered as small logo tiles. `url` is where the tile links.
      Toast and Grubhub point at the restaurant's real store pages;
@@ -2961,7 +2970,7 @@ window.MBD = (function () {
   };
 
 
-  return { business, ordering, social, specials, chef, reviews, menu, catering };
+  return { business, show, ordering, social, specials, chef, reviews, menu, catering };
 })();
 
 </script>
@@ -3135,7 +3144,22 @@ window.MBD_dishId = function (sectionId, name) {
   }
 
   /* ---------- Specials ------------------------------------- */
+  /* Switched off in content.js: the section leaves the page along
+     with every link pointing at it, so nothing scrolls to an anchor
+     that is no longer there. */
+  function hideSpecials() {
+    const section = document.getElementById("specials");
+    if (section) section.remove();
+    $$('a[href$="#specials"]').forEach((a) => a.remove());
+
+    // The chef section is flush under the specials because the two
+    // share a dark background. Alone, it needs its top padding back.
+    const chef = document.getElementById("chef");
+    if (chef) chef.style.paddingTop = "";
+  }
+
   function renderSpecials() {
+    if (D.show && D.show.specials === false) { hideSpecials(); return; }
     const grid = $("[data-specials]");
     if (!grid) return;
     grid.innerHTML = D.specials.map((s, i) => `
