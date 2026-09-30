@@ -63,6 +63,15 @@ window.MBD = (function () {
       url: "https://earlymorningdelight.toast.site/order/early-morning-delight-1924-w-irving-park-rd"
     },
     {
+      key: "fromtherestaurant", name: "From The Restaurant",
+      wordmark: "From The Restaurant", brand: "#30221d", fg: "#fdb100",
+      note: "Order online",
+      // The name begins with "From", so the default "Order from" would
+      // announce "Order from From The Restaurant".
+      action: "Order online at",
+      url: "https://fromtherestaurant.com/early-morning-delight/locations"
+    },
+    {
       key: "doordash", name: "DoorDash", wordmark: "DoorDash", brand: "#ff3008", fg: "#ffffff",
       note: "Delivery",
       url: "https://www.doordash.com/search/store/Early%20Morning%20Delight%20Chicago",
@@ -84,6 +93,14 @@ window.MBD = (function () {
       key: "grubhub", name: "Grubhub", wordmark: "Grubhub", brand: "#f63440", fg: "#ffffff",
       note: "Delivery",
       url: "https://www.grubhub.com/restaurant/early-morning-delight-1924-w-irving-park-rd-chicago/5645664"
+    },
+    {
+      key: "yelp", name: "Yelp", wordmark: "Yelp", brand: "#ff1a1a", fg: "#ffffff",
+      note: "Book a table",
+      // Not an ordering link. 'action' replaces the default "Order from",
+      // which the screen reader and the tooltip would otherwise announce.
+      action: "Reserve a table through",
+      url: "https://www.yelp.com/reservations/early-morning-delight-chicago/?from_reserve_now=1"
     }
   ];
 

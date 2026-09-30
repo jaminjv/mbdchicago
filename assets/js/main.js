@@ -136,7 +136,7 @@
            title="${esc(p.name)}${p.searchOnly ? " — opens a search on their app" : ""}">
           <span class="order-tile__face">${art}</span>
           <span class="order-tile__note">${esc(p.note)}</span>
-          <span class="sr-only">Order from ${esc(p.name)}</span>
+          <span class="sr-only">${esc(p.action || "Order from")} ${esc(p.name)}</span>
         </a>`;
     }).join("");
   }
