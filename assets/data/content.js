@@ -123,7 +123,7 @@ window.MBD = (function () {
      restaurant confirms each one by phone or email.
   ---------------------------------------------------------- */
   const reservations = {
-    accessKey: "",
+    accessKey: "ddee47f6-9ba3-4282-8c2f-79d753479d75",
 
     slotMinutes: 30,       // times offered every 30 minutes
     lastSeating: 60,       // last table this many minutes before closing
