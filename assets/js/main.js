@@ -103,21 +103,27 @@
     }).join("");
   }
 
+  /* "8:00 AM" -> 480, and back. */
+  function toMinutes(t) {
+    const m = String(t).match(/(\d+):(\d+)\s*(AM|PM)/i);
+    if (!m) return 0;
+    let hh = +m[1] % 12;
+    if (/PM/i.test(m[3])) hh += 12;
+    return hh * 60 + +m[2];
+  }
+  function toClock(mins) {
+    const h = Math.floor(mins / 60), m = mins % 60;
+    return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
+  }
+
   function renderOpenState() {
     const el = $("[data-open-state]");
     if (!el) return;
     const now = new Date();
     const today = D.business.hours.find((h) => h.idx === now.getDay());
     if (!today) return;
-    const parse = (t) => {
-      const m = t.match(/(\d+):(\d+)\s*(AM|PM)/i);
-      if (!m) return 0;
-      let hh = +m[1] % 12;
-      if (/PM/i.test(m[3])) hh += 12;
-      return hh * 60 + +m[2];
-    };
     const mins = now.getHours() * 60 + now.getMinutes();
-    const open = mins >= parse(today.open) && mins < parse(today.close);
+    const open = mins >= toMinutes(today.open) && mins < toMinutes(today.close);
     el.dataset.open = String(open);
     el.textContent = open ? `Open now until ${today.close}` : `Opens ${today.day} at ${today.open}`;
   }
@@ -130,6 +136,13 @@
       const art = p.logo
         ? `<img src="${esc(p.logo)}" alt="${esc(p.name)}">`
         : `<span class="order-tile__wordmark">${esc(p.wordmark || p.name)}</span>`;
+      if (p.opens) return `
+        <button class="order-tile" type="button" data-open="${esc(p.opens)}"
+                aria-haspopup="dialog" aria-label="${esc(p.name)}"
+                style="--brand:${esc(p.brand)};--brand-fg:${esc(p.fg)}">
+          <span class="order-tile__face">${art}</span>
+          <span class="order-tile__note">${esc(p.note)}</span>
+        </button>`;
       return `
         <a class="order-tile" href="${esc(p.url)}" target="_blank" rel="noopener"
            style="--brand:${esc(p.brand)};--brand-fg:${esc(p.fg)}"
@@ -381,6 +394,285 @@
     $$(".reveal").forEach((el) => io.observe(el));
   }
 
+  /* ---------- Reserve a table ------------------------------ */
+  /* Dates and times are the restaurant's, not the visitor's: someone
+     booking from another time zone is still choosing a Chicago table,
+     and "today" has to mean today in Chicago. */
+  const TZ = "America/Chicago";
+
+  function chicagoNow() {
+    const part = {};
+    new Intl.DateTimeFormat("en-US", {
+      timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", hourCycle: "h23"
+    }).formatToParts(new Date()).forEach((p) => { part[p.type] = p.value; });
+    return { date: `${part.year}-${part.month}-${part.day}`, mins: +part.hour * 60 + +part.minute };
+  }
+
+  // Calendar arithmetic on "YYYY-MM-DD" strings, done in UTC so no
+  // local offset or daylight-saving change can shift the day.
+  const isoToUTC = (iso) => { const [y, m, d] = iso.split("-").map(Number); return new Date(Date.UTC(y, m - 1, d)); };
+  const addDays  = (iso, n) => { const t = isoToUTC(iso); t.setUTCDate(t.getUTCDate() + n); return t.toISOString().slice(0, 10); };
+  const longDate = (iso) => isoToUTC(iso).toLocaleDateString("en-US",
+    { timeZone: "UTC", weekday: "long", month: "long", day: "numeric", year: "numeric" });
+
+  function hoursOn(iso) {
+    return D.business.hours.find((h) => h.idx === isoToUTC(iso).getUTCDay());
+  }
+
+  /* Bookable times on a date, in minutes past midnight: every slot from
+     opening to the last seating, and on today only those far enough
+     ahead for someone to see the request. */
+  function slotsOn(iso) {
+    const R = D.reservations, h = hoursOn(iso);
+    if (!h) return [];
+    let start = toMinutes(h.open);
+    const end = toMinutes(h.close) - R.lastSeating;
+    const now = chicagoNow();
+    if (iso === now.date) {
+      const earliest = now.mins + R.minNotice;
+      start = Math.max(start, Math.ceil(earliest / R.slotMinutes) * R.slotMinutes);
+    }
+    const out = [];
+    for (let t = start; t <= end; t += R.slotMinutes) out.push(t);
+    return out;
+  }
+
+  function initReserve() {
+    const dialog = $("#reserve");
+    const R = D.reservations;
+    if (!dialog || !R) return;
+
+    const form    = $("[data-reserve-form]", dialog);
+    const formView = $("[data-reserve-form-view]", dialog);
+    const done    = $("[data-reserve-done]", dialog);
+    const status  = $("[data-reserve-status]", dialog);
+    const submit  = $("[data-reserve-submit]", dialog);
+    const hint    = $("[data-reserve-hours]", dialog);
+    const f = {
+      date: $("#r-date", dialog), time: $("#r-time", dialog), party: $("#r-party", dialog),
+      name: $("#r-name", dialog), email: $("#r-email", dialog), phone: $("#r-phone", dialog),
+      notes: $("#r-notes", dialog)
+    };
+    const phoneHref = D.business.phoneHref, phone = D.business.phone;
+
+    // Party size: 1..maxParty, then one "and up" option for big groups.
+    const partyLabel = (n) => n > R.maxParty ? `${R.maxParty + 1}+ guests` : `${n} guest${n === 1 ? "" : "s"}`;
+    f.party.innerHTML = Array.from({ length: R.maxParty + 1 }, (_, i) => i + 1)
+      .map((n) => `<option value="${n}"${n === 2 ? " selected" : ""}>${partyLabel(n)}</option>`).join("");
+
+    // The bookable window. If today has no slots left, it starts tomorrow.
+    let first, last;
+    function setWindow() {
+      const today = chicagoNow().date;
+      first = slotsOn(today).length ? today : addDays(today, 1);
+      last  = addDays(today, R.daysAhead);
+      f.date.min = first;
+      f.date.max = last;
+    }
+
+    function fillTimes() {
+      const iso = f.date.value;
+      const keep = f.time.value;
+      const inRange = iso && iso >= first && iso <= last;
+      const slots = inRange ? slotsOn(iso) : [];
+      if (!inRange) {
+        f.time.innerHTML = '<option value="">Pick date</option>';
+        f.time.disabled = true;
+        hint.textContent = "";
+        return;
+      }
+      const h = hoursOn(iso);
+      if (!slots.length) {
+        f.time.innerHTML = '<option value="">None left</option>';
+        f.time.disabled = true;
+      } else {
+        f.time.innerHTML = '<option value="">Choose…</option>' + slots.map((t) => {
+          const c = toClock(t);
+          return `<option value="${c}"${c === keep ? " selected" : ""}>${c}</option>`;
+        }).join("");
+        f.time.disabled = false;
+      }
+      hint.textContent = `${h.day}: we seat from ${h.open} to ${toClock(toMinutes(h.close) - R.lastSeating)}.`;
+    }
+
+    /* ---- Validation: one message per field, shown on submit and
+       cleared as soon as the guest edits that field. */
+    const checks = {
+      date: () => {
+        const v = f.date.value;
+        if (!v) return "Pick a date.";
+        if (v < first) return "That date has passed — pick another.";
+        if (v > last) return `We take bookings up to ${R.daysAhead} days ahead.`;
+        return "";
+      },
+      time: () => (f.time.value ? "" : (f.time.disabled && f.date.value ? "No times left that day — pick another date." : "Pick a time.")),
+      party: () => (f.party.value ? "" : "How many guests?"),
+      name: () => (f.name.value.trim().length >= 2 ? "" : "Please enter your name."),
+      email: () => {
+        const v = f.email.value.trim();
+        if (!v) return "We need an email to confirm your table.";
+        return f.email.validity.valid && /@.+\./.test(v) ? "" : "That email doesn't look right.";
+      },
+      phone: () => {
+        const digits = f.phone.value.replace(/\D/g, "").length;
+        return digits >= 10 && digits <= 15 ? "" : "Please enter a phone number we can call.";
+      }
+    };
+
+    function showError(key, msg) {
+      const input = f[key], err = $(`#r-${key}-err`, dialog);
+      input.setAttribute("aria-invalid", msg ? "true" : "false");
+      if (msg) input.setAttribute("aria-describedby", err.id); else input.removeAttribute("aria-describedby");
+      err.textContent = msg;
+      err.hidden = !msg;
+    }
+
+    function validate() {
+      let firstBad = null;
+      Object.keys(checks).forEach((key) => {
+        const msg = checks[key]();
+        showError(key, msg);
+        if (msg && !firstBad) firstBad = f[key];
+      });
+      return firstBad;
+    }
+
+    function setStatus(html) {
+      status.innerHTML = html || "";
+      status.hidden = !html;
+    }
+
+    Object.keys(checks).forEach((key) => {
+      const clear = () => { if (f[key].getAttribute("aria-invalid") === "true") showError(key, ""); };
+      f[key].addEventListener("input", clear);
+      f[key].addEventListener("change", clear);
+    });
+    f.date.addEventListener("change", fillTimes);
+    f.date.addEventListener("input", fillTimes);
+
+    function reset() {
+      form.reset();
+      f.party.value = "2";
+      Object.keys(checks).forEach((key) => showError(key, ""));
+      setStatus("");
+      formView.hidden = false;
+      done.hidden = true;
+      setWindow();
+      fillTimes();
+    }
+
+    /* ---- Open / close ------------------------------------- */
+    let sent = false;
+    function open() {
+      if (sent) { reset(); sent = false; }
+      setWindow();   // the window moves if the page sat open past a slot or midnight
+      fillTimes();
+      if (dialog.open) return;
+      if (typeof dialog.showModal === "function") dialog.showModal();
+      else dialog.setAttribute("open", "");
+    }
+    function close() {
+      if (typeof dialog.close === "function" && dialog.open) dialog.close();
+      else dialog.removeAttribute("open");
+    }
+
+    // Leaving #reserve in the address bar would stop the same link from
+    // reopening the form, and would reopen it on refresh.
+    dialog.addEventListener("close", () => {
+      if (location.hash === "#reserve") history.replaceState(null, "", location.pathname + location.search);
+    });
+
+    document.addEventListener("click", (e) => {
+      const opener = e.target.closest('[data-open="reserve"], a[href="#reserve"]');
+      if (opener) { e.preventDefault(); open(); return; }
+      if (e.target.closest("[data-reserve-close]")) close();
+    });
+
+    // A click on the dimmed backdrop closes; a text selection that merely
+    // ends there does not.
+    let downOnBackdrop = false;
+    dialog.addEventListener("mousedown", (e) => { downOnBackdrop = e.target === dialog; });
+    dialog.addEventListener("click", (e) => {
+      if (e.target === dialog && downOnBackdrop) close();
+      downOnBackdrop = false;
+    });
+
+    if (location.hash === "#reserve") open();
+    window.addEventListener("hashchange", () => { if (location.hash === "#reserve") open(); });
+
+    /* ---- Send --------------------------------------------- */
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      setStatus("");
+      const bad = validate();
+      if (bad) { bad.focus(); return; }
+
+      const callUs = `<a href="${esc(phoneHref)}">${esc(phone)}</a>`;
+      if (!R.accessKey) {
+        setStatus(`Online booking isn't switched on yet. Call us at ${callUs} and we'll save you a table.`);
+        return;
+      }
+
+      const party = partyLabel(+f.party.value);
+      const date = longDate(f.date.value);
+      const time = f.time.value;
+      const name = f.name.value.trim();
+      const email = f.email.value.trim();
+      const summary = `${party} on ${date} at ${time}`;
+
+      const showDone = () => {
+        sent = true;
+        $("[data-reserve-summary]", dialog).innerHTML =
+          `<strong>${esc(summary)}</strong>, under ${esc(name)}. We'll confirm at ${esc(email)}.`;
+        formView.hidden = true;
+        done.hidden = false;
+        done.focus();
+      };
+
+      // Filled in by a bot: look successful, send nothing.
+      if (form.elements.botcheck.checked) { showDone(); return; }
+
+      submit.disabled = true;
+      submit.textContent = "Sending…";
+      const timeout = new AbortController();
+      const timer = setTimeout(() => timeout.abort(), 15000);
+      try {
+        const res = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          signal: timeout.signal,
+          body: JSON.stringify({
+            access_key: R.accessKey,
+            subject: `Table request: ${name}, ${party}, ${date} at ${time}`,
+            from_name: `${D.business.name} website`,
+            replyto: email,
+            "Name": name,
+            "Email": email,
+            "Phone": f.phone.value.trim(),
+            "Date": date,
+            "Time": time,
+            "Guests": party,
+            "Special requests": f.notes.value.trim() || "None"
+          })
+        });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok || json.success === false) throw new Error(json.message || `HTTP ${res.status}`);
+        showDone();
+      } catch (err) {
+        setStatus(`We couldn't send that just now. Please try again, or call us at ${callUs}.`);
+        if (window.console) console.warn("Reservation not sent:", err);
+      } finally {
+        clearTimeout(timer);
+        submit.disabled = false;
+        submit.textContent = "Request My Table";
+      }
+    });
+
+    setWindow();
+    fillTimes();
+  }
+
   /* ---------- Boot ----------------------------------------- */
   function boot() {
     if (!D) return;
@@ -389,6 +681,7 @@
     renderHours();
     renderOpenState();
     renderOrdering();
+    initReserve();
     renderSpecials();
     renderChef();
     renderRating();

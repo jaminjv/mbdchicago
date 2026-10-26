@@ -95,14 +95,42 @@ window.MBD = (function () {
       url: "https://www.grubhub.com/restaurant/early-morning-delight-1924-w-irving-park-rd-chicago/5645664"
     },
     {
-      key: "yelp", name: "Yelp", wordmark: "Yelp", brand: "#ff1a1a", fg: "#ffffff",
+      // Our own booking form, not a link out: `opens` makes the tile a
+      // button that opens it. Requests arrive by email — see
+      // `reservations` below for where they go.
+      key: "reserve", name: "Reserve a table", wordmark: "Reserve a Table",
+      brand: "#fdb100", fg: "#30221d",
       note: "Book a table",
-      // Not an ordering link. 'action' replaces the default "Order from",
-      // which the screen reader and the tooltip would otherwise announce.
-      action: "Reserve a table through",
-      url: "https://www.yelp.com/reservations/early-morning-delight-chicago/?from_reserve_now=1"
+      opens: "reserve"
     }
   ];
+
+  /* ---- Table reservations ---------------------------------
+     The "Reserve a Table" tile opens a form; each request is emailed
+     to the restaurant through Web3Forms (free, up to 250 a month).
+
+     To connect it, once:
+       1. Go to https://web3forms.com, enter the inbox that should get
+          the bookings, and press "Create Access Key".
+       2. The key arrives by email. Paste it below and publish.
+
+     The key is safe to have in a public page — it can only send to the
+     inbox it was created for, and that address never appears in the
+     site's code. Until a key is set, the form still opens but tells
+     guests to call instead of pretending to send.
+
+     These are booking *requests*: nothing checks availability, so the
+     restaurant confirms each one by phone or email.
+  ---------------------------------------------------------- */
+  const reservations = {
+    accessKey: "",
+
+    slotMinutes: 30,       // times offered every 30 minutes
+    lastSeating: 60,       // last table this many minutes before closing
+    minNotice: 60,         // today's earliest slot is at least this far out
+    daysAhead: 60,         // how far ahead guests can book
+    maxParty: 12           // above this, guests pick "13+" and get a call
+  };
 
   /* ---- Social --------------------------------------------- */
   const social = [
@@ -502,5 +530,5 @@ window.MBD = (function () {
   };
 
 
-  return { business, show, ordering, social, specials, chef, reviews, menu, catering };
+  return { business, show, ordering, reservations, social, specials, chef, reviews, menu, catering };
 })();

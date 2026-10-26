@@ -26,6 +26,7 @@
   "description": "Breakfast and brunch with a Mexican heart in North Center, Chicago.",
   "url": "https://mbdchicago.com/",
   "menu": "https://mbdchicago.com/menu.html",
+  "acceptsReservations": "https://mbdchicago.com/#reserve",
   "servesCuisine": [
     "Breakfast",
     "Brunch",
@@ -271,6 +272,7 @@
           <li><a href="menu.html">Menu</a></li>
           <li><a href="catering.html">Catering</a></li>
           <li><a href="#order">Order online</a></li>
+          <li><a href="#reserve">Reserve a table</a></li>
           <li><a href="#specials">Special of the week</a></li>
           <li><a href="#chef">Our chef</a></li>
         </ul>
@@ -295,6 +297,100 @@
     </p>
   </div>
 </footer>
+
+<!-- ================= RESERVE A TABLE =================
+     Opened by the "Reserve a Table" tile, by any link to #reserve, or by
+     arriving at mbdchicago.com/#reserve. Behaviour: assets/js/main.js,
+     settings: `reservations` in assets/data/content.js. -->
+<dialog class="reserve" id="reserve" aria-labelledby="reserve-title">
+  <div class="reserve__card">
+    <button class="reserve__close" type="button" data-reserve-close aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+
+    <div class="reserve__form-view" data-reserve-form-view>
+      <header class="reserve__head">
+        <span class="eyebrow">Reserve a Table</span>
+        <h2 id="reserve-title">Save Us a <span class="script">Seat.</span></h2>
+        <p>Tell us when you're coming and we'll confirm by phone or email.</p>
+      </header>
+
+      <form class="reserve__form" data-reserve-form novalidate>
+        <fieldset class="reserve__group">
+          <legend>When</legend>
+          <div class="reserve__row reserve__row--3">
+            <div class="rfield">
+              <label for="r-date">Date</label>
+              <input id="r-date" name="date" type="date" required>
+              <p class="rfield__error" id="r-date-err" hidden></p>
+            </div>
+            <div class="rfield">
+              <label for="r-time">Time</label>
+              <select id="r-time" name="time" required disabled>
+                <option value="">Pick date</option>
+              </select>
+              <p class="rfield__error" id="r-time-err" hidden></p>
+            </div>
+            <div class="rfield">
+              <label for="r-party">Guests</label>
+              <select id="r-party" name="party" required></select>
+              <p class="rfield__error" id="r-party-err" hidden></p>
+            </div>
+          </div>
+          <p class="reserve__hint" data-reserve-hours></p>
+        </fieldset>
+
+        <fieldset class="reserve__group">
+          <legend>Who</legend>
+          <div class="rfield">
+            <label for="r-name">Full name</label>
+            <input id="r-name" name="name" type="text" autocomplete="name" maxlength="80" required>
+            <p class="rfield__error" id="r-name-err" hidden></p>
+          </div>
+          <div class="reserve__row">
+            <div class="rfield">
+              <label for="r-email">Email</label>
+              <input id="r-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" required>
+              <p class="rfield__error" id="r-email-err" hidden></p>
+            </div>
+            <div class="rfield">
+              <label for="r-phone">Phone</label>
+              <input id="r-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="24" required>
+              <p class="rfield__error" id="r-phone-err" hidden></p>
+            </div>
+          </div>
+          <div class="rfield">
+            <label for="r-notes">Special requests <span class="rfield__optional">Optional</span></label>
+            <textarea id="r-notes" name="notes" rows="3" maxlength="500"
+                      placeholder="High chair, a birthday, allergies, a quiet corner…"></textarea>
+          </div>
+        </fieldset>
+
+        <!-- Left empty by people, filled in by spam bots. -->
+        <input class="reserve__trap" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+        <div class="reserve__status" data-reserve-status role="alert" hidden></div>
+
+        <button class="btn btn--lg reserve__submit" type="submit" data-reserve-submit>Request My Table</button>
+        <p class="reserve__fine">
+          This is a request, not a confirmed booking. Same day? Calling is quickest:
+          <a href="tel:+18722062610">(872) 206-2610</a>.
+        </p>
+      </form>
+    </div>
+
+    <div class="reserve__done" data-reserve-done hidden tabindex="-1">
+      <span class="reserve__done-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+      </span>
+      <h2>Request <span class="script">Sent!</span></h2>
+      <p data-reserve-summary></p>
+      <p class="reserve__fine">We'll get back to you to confirm. Plans changed? Call us at
+        <a href="tel:+18722062610">(872) 206-2610</a>.</p>
+      <button class="btn btn--ink" type="button" data-reserve-close>Done</button>
+    </div>
+  </div>
+</dialog>
 
 <script src="assets/data/supabase-config.js"></script>
 <script src="assets/data/content.js"></script>

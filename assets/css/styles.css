@@ -255,6 +255,7 @@ p  { text-wrap: pretty; }
   transition: transform .18s cubic-bezier(.34,1.56,.64,1);
 }
 .order-tile:hover { transform: translateY(-5px); }
+button.order-tile { padding: 0; text-align: center; }
 .order-tile__face {
   width: 100%; aspect-ratio: 1;
   display: grid; place-items: center; padding: .55rem;
@@ -554,6 +555,119 @@ p  { text-wrap: pretty; }
 .cater-step h3 { font-size: 1.15rem; margin-bottom: .4rem; }
 .cater-step p { font-size: .93rem; color: var(--ink-muted); }
 .section--dark .cater-step p { color: rgba(255,255,255,.72); }
+
+/* --- Reserve a table (dialog) ----------------------------------- */
+.reserve {
+  width: min(600px, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  margin: auto; padding: 0; border: 0;
+  background: transparent; color: var(--cocoa);
+  overflow: visible;
+}
+/* Panels here set their own display, which would otherwise beat the
+   hidden attribute and draw both the form and the confirmation. */
+.reserve [hidden] { display: none !important; }
+.reserve::backdrop { background: rgba(48, 34, 29, .62); backdrop-filter: blur(3px); }
+html:has(.reserve[open]) { overflow: hidden; }
+.reserve[open] { animation: reserve-in .28s cubic-bezier(.34,1.4,.64,1); }
+@keyframes reserve-in { from { opacity: 0; transform: translateY(18px) scale(.98); } }
+
+.reserve__card {
+  position: relative;
+  max-height: calc(100dvh - 2rem); overflow-y: auto; overscroll-behavior: contain;
+  background: var(--cream);
+  border: 3px solid var(--cocoa); border-radius: var(--r-lg);
+  box-shadow: var(--shadow-pop);
+  padding: clamp(1.4rem, 4vw, 2.4rem);
+}
+.reserve__close {
+  position: absolute; top: .9rem; right: .9rem;
+  width: 42px; height: 42px; display: grid; place-items: center;
+  border-radius: 50%; color: var(--cocoa);
+  transition: background .2s;
+}
+.reserve__close:hover { background: var(--cream-deep); }
+.reserve__close svg { width: 22px; height: 22px; }
+
+.reserve__head { padding-right: 2.5rem; margin-bottom: 1.4rem; }
+.reserve__head h2 { font-size: clamp(1.8rem, 5vw, 2.4rem); line-height: 1.05; margin: .55rem 0 .45rem; }
+.reserve__head p { color: var(--ink-muted); }
+
+.reserve__form { display: grid; gap: 1.3rem; }
+.reserve__group { border: 0; padding: 0; min-width: 0; display: grid; gap: .9rem; }
+.reserve__group legend {
+  padding: 0; margin-bottom: .2rem;
+  font-size: .74rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--sunny-deep);
+}
+.reserve__row { display: grid; gap: .9rem; grid-template-columns: 1fr 1fr; }
+.reserve__row--3 { grid-template-columns: 1.35fr 1fr 1fr; }
+@media (max-width: 560px) {
+  .reserve__row, .reserve__row--3 { grid-template-columns: 1fr 1fr; }
+  .reserve__row--3 .rfield:first-child { grid-column: 1 / -1; }
+  .reserve__row:not(.reserve__row--3) { grid-template-columns: 1fr; }
+}
+/* Half a 320px screen is too narrow for "13+ guests" or "11:30 AM". */
+@media (max-width: 380px) {
+  .reserve__row--3 { grid-template-columns: 1fr; }
+}
+
+.rfield { display: grid; gap: .35rem; min-width: 0; }
+.rfield label { font-weight: 700; font-size: .92rem; }
+.rfield__optional {
+  margin-left: .35rem; font-weight: 600; font-size: .78rem; color: var(--ink-muted);
+}
+/* 16px or more, or iOS zooms the page in on focus. */
+.rfield input, .rfield select, .rfield textarea {
+  width: 100%; min-width: 0;
+  font: inherit; font-size: max(16px, 1rem); color: var(--cocoa);
+  background: var(--white);
+  border: 2px solid var(--cocoa); border-radius: var(--r-sm);
+  padding: .72rem .9rem;
+  min-height: 50px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.rfield input[type="date"] { -webkit-appearance: none; appearance: none; }
+.rfield select {
+  -webkit-appearance: none; appearance: none;
+  padding-right: 2.4rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2330221d' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right .8rem center; background-size: 16px;
+}
+.rfield select:disabled { background-color: var(--cream-deep); color: var(--ink-muted); border-color: #d9c9b6; cursor: not-allowed; }
+.rfield textarea { resize: vertical; min-height: 88px; }
+.rfield input:focus, .rfield select:focus, .rfield textarea:focus {
+  outline: none; border-color: var(--cocoa); box-shadow: 0 0 0 4px rgba(253, 177, 0, .55);
+}
+.rfield [aria-invalid="true"] { border-color: #c2361b; }
+.rfield [aria-invalid="true"]:focus { box-shadow: 0 0 0 4px rgba(194, 54, 27, .22); }
+.rfield__error { color: #b02f16; font-size: .84rem; font-weight: 600; line-height: 1.35; }
+
+.reserve__hint { font-size: .86rem; color: var(--ink-muted); margin-top: -.2rem; }
+.reserve__hint:empty { display: none; }
+.reserve__trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+.reserve__status {
+  padding: .85rem 1rem; border-radius: var(--r-sm);
+  background: #fde8e2; border: 2px solid #e8a595; color: #7a2412;
+  font-size: .92rem; font-weight: 600;
+}
+.reserve__status a { text-decoration: underline; white-space: nowrap; }
+.reserve__submit { width: 100%; }
+.reserve__submit:disabled { opacity: .7; cursor: progress; transform: none; }
+.reserve__fine { font-size: .84rem; color: var(--ink-muted); text-align: center; }
+.reserve__fine a { color: var(--cocoa); font-weight: 700; text-decoration: underline; white-space: nowrap; }
+
+.reserve__done { text-align: center; display: grid; gap: .9rem; justify-items: center; padding: 1rem 0 .4rem; outline: none; }
+.reserve__done h2 { font-size: clamp(1.9rem, 5vw, 2.5rem); line-height: 1.05; }
+.reserve__done p { max-width: 42ch; }
+.reserve__done-mark {
+  width: 76px; height: 76px; display: grid; place-items: center;
+  border-radius: 50%; background: var(--sunny); color: var(--cocoa);
+  border: 3px solid var(--cocoa); box-shadow: 0 5px 0 var(--cocoa);
+}
+.reserve__done-mark svg { width: 38px; height: 38px; }
+.reserve__done .btn { margin-top: .4rem; }
 
 /* --- Utility / motion -------------------------------------------- */
 .reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.8,.2,1); }
