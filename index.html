@@ -303,91 +303,156 @@
      arriving at mbdchicago.com/#reserve. Behaviour: assets/js/main.js,
      settings: `reservations` in assets/data/content.js. -->
 <dialog class="reserve" id="reserve" aria-labelledby="reserve-title">
+  <button class="reserve__close" type="button" data-reserve-close aria-label="Close">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+
   <div class="reserve__card">
-    <button class="reserve__close" type="button" data-reserve-close aria-label="Close">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    </button>
-
-    <div class="reserve__form-view" data-reserve-form-view>
-      <header class="reserve__head">
-        <span class="eyebrow">Reserve a Table</span>
-        <h2 id="reserve-title">Save Us a <span class="script">Seat.</span></h2>
-        <p>Tell us when you're coming and we'll confirm by phone or email.</p>
-      </header>
-
-      <form class="reserve__form" data-reserve-form novalidate>
-        <fieldset class="reserve__group">
-          <legend>When</legend>
-          <div class="reserve__row reserve__row--3">
-            <div class="rfield">
-              <label for="r-date">Date</label>
-              <input id="r-date" name="date" type="date" required>
-              <p class="rfield__error" id="r-date-err" hidden></p>
-            </div>
-            <div class="rfield">
-              <label for="r-time">Time</label>
-              <select id="r-time" name="time" required disabled>
-                <option value="">Pick date</option>
-              </select>
-              <p class="rfield__error" id="r-time-err" hidden></p>
-            </div>
-            <div class="rfield">
-              <label for="r-party">Guests</label>
-              <select id="r-party" name="party" required></select>
-              <p class="rfield__error" id="r-party-err" hidden></p>
-            </div>
-          </div>
-          <p class="reserve__hint" data-reserve-hours></p>
-        </fieldset>
-
-        <fieldset class="reserve__group">
-          <legend>Who</legend>
-          <div class="rfield">
-            <label for="r-name">Full name</label>
-            <input id="r-name" name="name" type="text" autocomplete="name" maxlength="80" required>
-            <p class="rfield__error" id="r-name-err" hidden></p>
-          </div>
-          <div class="reserve__row">
-            <div class="rfield">
-              <label for="r-email">Email</label>
-              <input id="r-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" required>
-              <p class="rfield__error" id="r-email-err" hidden></p>
-            </div>
-            <div class="rfield">
-              <label for="r-phone">Phone</label>
-              <input id="r-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="24" required>
-              <p class="rfield__error" id="r-phone-err" hidden></p>
-            </div>
-          </div>
-          <div class="rfield">
-            <label for="r-notes">Special requests <span class="rfield__optional">Optional</span></label>
-            <textarea id="r-notes" name="notes" rows="3" maxlength="500"
-                      placeholder="High chair, a birthday, allergies, a quiet corner…"></textarea>
-          </div>
-        </fieldset>
-
-        <!-- Left empty by people, filled in by spam bots. -->
-        <input class="reserve__trap" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
-
-        <div class="reserve__status" data-reserve-status role="alert" hidden></div>
-
-        <button class="btn btn--lg reserve__submit" type="submit" data-reserve-submit>Request My Table</button>
-        <p class="reserve__fine">
-          This is a request, not a confirmed booking. Same day? Calling is quickest:
-          <a href="tel:+18722062610">(872) 206-2610</a>.
-        </p>
-      </form>
+    <!-- Decorative: a photo panel beside the form on wide screens, a
+         banner above it on phones. Everything in it is said elsewhere. -->
+    <div class="reserve__side" aria-hidden="true">
+      <img class="reserve__side-img" src="assets/img/special-berries-crepes.jpg" alt="" loading="lazy">
+      <div class="reserve__side-copy">
+        <img class="reserve__side-mark" src="assets/img/logo-mark.svg" alt="" width="56" height="57">
+        <p class="reserve__side-line"><span class="script">Good Morning</span> starts at our table.</p>
+        <ul class="reserve__side-facts">
+          <li>1924 W Irving Park Rd, Chicago</li>
+          <li>Mon–Fri 8 AM – 4 PM · Sat–Sun 7 AM – 4 PM</li>
+        </ul>
+      </div>
     </div>
 
-    <div class="reserve__done" data-reserve-done hidden tabindex="-1">
-      <span class="reserve__done-mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
-      </span>
-      <h2>Request <span class="script">Sent!</span></h2>
-      <p data-reserve-summary></p>
-      <p class="reserve__fine">We'll get back to you to confirm. Plans changed? Call us at
-        <a href="tel:+18722062610">(872) 206-2610</a>.</p>
-      <button class="btn btn--ink" type="button" data-reserve-close>Done</button>
+    <div class="reserve__main">
+      <div data-reserve-form-view>
+        <header class="reserve__head">
+          <span class="eyebrow">Reserve a Table</span>
+          <h2 id="reserve-title">Save Us a <span class="script">Seat.</span></h2>
+          <ol class="reserve__steps" aria-label="Progress">
+            <li data-step-dot="1" aria-current="step"><span>1</span> When</li>
+            <li data-step-dot="2"><span>2</span> Your details</li>
+          </ol>
+        </header>
+
+        <form class="reserve__form" data-reserve-form novalidate>
+          <!-- ---- Step 1: party, day, time ---- -->
+          <div class="reserve__step" data-step="1">
+            <div class="reserve__block">
+              <div class="reserve__label" id="r-party-label">Guests</div>
+              <div class="stepper" role="group" aria-labelledby="r-party-label">
+                <button class="stepper__btn" type="button" data-party-step="-1" aria-label="Fewer guests">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg>
+                </button>
+                <output class="stepper__value" id="r-party-out" aria-live="polite">2 guests</output>
+                <button class="stepper__btn" type="button" data-party-step="1" aria-label="More guests">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 6v12M6 12h12"/></svg>
+                </button>
+              </div>
+              <input type="hidden" name="party" id="r-party" value="2">
+              <p class="reserve__note" data-party-note hidden>Big group! We'll call you to plan the table.</p>
+            </div>
+
+            <fieldset class="reserve__block">
+              <legend class="reserve__label">Day</legend>
+              <div class="days" data-days></div>
+              <input class="reserve__picker" type="date" id="r-date-picker" tabindex="-1" aria-hidden="true">
+              <p class="rfield__error" id="r-date-err" role="alert" hidden></p>
+            </fieldset>
+
+            <fieldset class="reserve__block">
+              <legend class="reserve__label">Time <span class="reserve__label-note" data-reserve-hours></span></legend>
+              <div class="times" data-times>
+                <p class="times__empty">Pick a day to see times.</p>
+              </div>
+              <p class="rfield__error" id="r-time-err" role="alert" hidden></p>
+            </fieldset>
+
+            <button class="btn btn--lg reserve__cta" type="button" data-reserve-next>
+              Continue
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+
+          <!-- ---- Step 2: who ---- -->
+          <div class="reserve__step" data-step="2" hidden>
+            <div class="recap">
+              <span class="recap__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+              </span>
+              <span class="recap__text" data-reserve-recap></span>
+              <button class="recap__change" type="button" data-reserve-back>Change</button>
+            </div>
+
+            <div class="rfield">
+              <label for="r-name">Full name</label>
+              <input id="r-name" name="name" type="text" autocomplete="name" maxlength="80" required>
+              <p class="rfield__error" id="r-name-err" hidden></p>
+            </div>
+            <div class="reserve__row">
+              <div class="rfield">
+                <label for="r-email">Email</label>
+                <input id="r-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" required>
+                <p class="rfield__error" id="r-email-err" hidden></p>
+              </div>
+              <div class="rfield">
+                <label for="r-phone">Phone</label>
+                <input id="r-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="24" required>
+                <p class="rfield__error" id="r-phone-err" hidden></p>
+              </div>
+            </div>
+            <div class="rfield">
+              <label for="r-notes">Special requests <span class="rfield__optional">Optional</span></label>
+              <textarea id="r-notes" name="notes" rows="3" maxlength="500"
+                        placeholder="High chair, a birthday, allergies, a quiet corner…"></textarea>
+            </div>
+
+            <!-- Left empty by people, filled in by spam bots. -->
+            <input class="reserve__trap" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+            <div class="reserve__status" data-reserve-status role="alert" hidden></div>
+
+            <button class="btn btn--lg reserve__cta" type="submit" data-reserve-submit>Request My Table</button>
+            <p class="reserve__fine">
+              This is a request, not a confirmed booking. Same day? Calling is quickest:
+              <a href="tel:+18722062610">(872) 206-2610</a>.
+            </p>
+          </div>
+        </form>
+      </div>
+
+      <!-- ---- Sent ---- -->
+      <div class="reserve__done" data-reserve-done hidden tabindex="-1">
+        <div class="ticket">
+          <div class="ticket__head">
+            <span class="ticket__mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+            </span>
+            <h2>Request <span class="script">Sent!</span></h2>
+            <p>We'll confirm at <strong data-ticket-email></strong>.</p>
+          </div>
+          <dl class="ticket__rows">
+            <div><dt>Day</dt><dd data-ticket-day></dd></div>
+            <div><dt>Time</dt><dd data-ticket-time></dd></div>
+            <div><dt>Guests</dt><dd data-ticket-party></dd></div>
+            <div><dt>Name</dt><dd data-ticket-name></dd></div>
+          </dl>
+          <div class="ticket__stub">
+            <p class="ticket__stub-title">Don't forget your table</p>
+            <p class="ticket__stub-text">Add it to your calendar and your phone reminds you the day before and an hour before.</p>
+            <div class="ticket__cal">
+              <a class="btn btn--sm" data-cal-ics download="mbd-breakfast-reservation.ics">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+                Apple / Outlook
+              </a>
+              <a class="btn btn--sm btn--ink" data-cal-google target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+                Google Calendar
+              </a>
+            </div>
+          </div>
+        </div>
+        <p class="reserve__fine">Plans changed? Call us at <a href="tel:+18722062610">(872) 206-2610</a>.</p>
+        <button class="reserve__done-close" type="button" data-reserve-close>Done</button>
+      </div>
     </div>
   </div>
 </dialog>

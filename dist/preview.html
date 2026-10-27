@@ -559,10 +559,13 @@ button.order-tile { padding: 0; text-align: center; }
 .cater-step p { font-size: .93rem; color: var(--ink-muted); }
 .section--dark .cater-step p { color: rgba(255,255,255,.72); }
 
-/* --- Reserve a table (dialog) ----------------------------------- */
+/* --- Reserve a table (dialog) -----------------------------------
+   Two steps — when, then who — and a ticket once it is sent. Wide
+   screens put a photo beside the form; phones open it as a sheet from
+   the bottom with the photo as a banner. */
 .reserve {
-  width: min(600px, calc(100vw - 2rem));
-  max-height: calc(100dvh - 2rem);
+  width: min(560px, calc(100vw - 2rem));
+  max-width: none; max-height: calc(100dvh - 2rem);
   margin: auto; padding: 0; border: 0;
   background: transparent; color: var(--cocoa);
   overflow: visible;
@@ -570,107 +573,275 @@ button.order-tile { padding: 0; text-align: center; }
 /* Panels here set their own display, which would otherwise beat the
    hidden attribute and draw both the form and the confirmation. */
 .reserve [hidden] { display: none !important; }
-.reserve::backdrop { background: rgba(48, 34, 29, .62); backdrop-filter: blur(3px); }
+.reserve::backdrop { background: rgba(48, 34, 29, .66); backdrop-filter: blur(4px); }
 html:has(.reserve[open]) { overflow: hidden; }
-.reserve[open] { animation: reserve-in .28s cubic-bezier(.34,1.4,.64,1); }
-@keyframes reserve-in { from { opacity: 0; transform: translateY(18px) scale(.98); } }
+.reserve[open] { animation: reserve-in .32s cubic-bezier(.34,1.4,.64,1); }
+@keyframes reserve-in { from { opacity: 0; transform: translateY(22px) scale(.97); } }
+
+.reserve__close {
+  position: absolute; top: .85rem; right: .85rem; z-index: 3;
+  width: 44px; height: 44px; display: grid; place-items: center;
+  border-radius: 50%; background: var(--white); color: var(--cocoa);
+  border: 2px solid var(--cocoa); box-shadow: 0 3px 0 var(--cocoa);
+  transition: transform .15s;
+}
+.reserve__close:hover { transform: rotate(90deg); }
+.reserve__close svg { width: 20px; height: 20px; }
 
 .reserve__card {
-  position: relative;
-  max-height: calc(100dvh - 2rem); overflow-y: auto; overscroll-behavior: contain;
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto; overscroll-behavior: contain;
   background: var(--cream);
   border: 3px solid var(--cocoa); border-radius: var(--r-lg);
-  box-shadow: var(--shadow-pop);
-  padding: clamp(1.4rem, 4vw, 2.4rem);
+  box-shadow: 0 12px 0 var(--cocoa), var(--shadow-card);
 }
-.reserve__close {
-  position: absolute; top: .9rem; right: .9rem;
-  width: 42px; height: 42px; display: grid; place-items: center;
-  border-radius: 50%; color: var(--cocoa);
-  transition: background .2s;
-}
-.reserve__close:hover { background: var(--cream-deep); }
-.reserve__close svg { width: 22px; height: 22px; }
+.reserve__main { padding: clamp(1.3rem, 3.5vw, 2.2rem); }
 
-.reserve__head { padding-right: 2.5rem; margin-bottom: 1.4rem; }
-.reserve__head h2 { font-size: clamp(1.8rem, 5vw, 2.4rem); line-height: 1.05; margin: .55rem 0 .45rem; }
-.reserve__head p { color: var(--ink-muted); }
+/* Photo panel */
+.reserve__side {
+  position: relative; overflow: hidden; isolation: isolate;
+  height: 150px; background: var(--cocoa); color: var(--white);
+}
+.reserve__side-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
+.reserve__side::after {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(180deg, rgba(48,34,29,.2) 0%, rgba(48,34,29,.45) 50%, rgba(48,34,29,.94) 100%);
+}
+.reserve__side-copy {
+  position: absolute; inset: 0; padding: 1rem 1.3rem;
+  display: flex; flex-direction: column; justify-content: flex-end; gap: .4rem;
+}
+.reserve__side-mark { position: absolute; top: 1rem; left: 1.2rem; width: 44px; height: auto; filter: drop-shadow(0 2px 6px rgba(0,0,0,.35)); }
+.reserve__side-line { font-weight: 800; font-size: 1.15rem; line-height: 1.15; text-shadow: 0 2px 10px rgba(0,0,0,.35); }
+.reserve__side-line .script { font-size: 1.3em; margin-right: .15em; }
+.reserve__side-facts { display: none; }
 
-.reserve__form { display: grid; gap: 1.3rem; }
-.reserve__group { border: 0; padding: 0; min-width: 0; display: grid; gap: .9rem; }
-.reserve__group legend {
-  padding: 0; margin-bottom: .2rem;
-  font-size: .74rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--sunny-deep);
+@media (min-width: 900px) {
+  .reserve { width: min(980px, calc(100vw - 3rem)); }
+  .reserve__card {
+    display: grid; grid-template-columns: 5fr 7fr;
+    overflow: hidden;
+  }
+  .reserve__main { overflow-y: auto; overscroll-behavior: contain; max-height: calc(100dvh - 2rem - 6px); }
+  .reserve__side { height: auto; min-height: 100%; }
+  .reserve__side-copy { padding: 2rem; gap: .9rem; }
+  .reserve__side-mark { top: 1.8rem; left: 2rem; width: 64px; }
+  .reserve__side-line { font-size: 1.7rem; }
+  .reserve__side-line .script { display: block; font-size: 1.6em; line-height: 1.1; }
+  .reserve__side-facts {
+    display: grid; gap: .3rem; padding-top: .9rem;
+    border-top: 1px solid rgba(255,255,255,.25);
+    font-size: .86rem; color: rgba(255,255,255,.82);
+  }
 }
-.reserve__row { display: grid; gap: .9rem; grid-template-columns: 1fr 1fr; }
-.reserve__row--3 { grid-template-columns: 1.35fr 1fr 1fr; }
-@media (max-width: 560px) {
-  .reserve__row, .reserve__row--3 { grid-template-columns: 1fr 1fr; }
-  .reserve__row--3 .rfield:first-child { grid-column: 1 / -1; }
-  .reserve__row:not(.reserve__row--3) { grid-template-columns: 1fr; }
+
+/* Phones: a sheet that rises from the bottom. */
+@media (max-width: 640px) {
+  .reserve { width: 100%; margin: auto 0 0; max-height: 94dvh; }
+  .reserve__card {
+    max-height: 94dvh;
+    border-radius: var(--r-lg) var(--r-lg) 0 0; border-bottom: 0;
+    box-shadow: 0 -10px 40px rgba(0,0,0,.25);
+  }
+  .reserve[open] { animation: reserve-up .38s cubic-bezier(.2,.9,.25,1); }
+  @keyframes reserve-up { from { transform: translateY(100%); } }
 }
-/* Half a 320px screen is too narrow for "13+ guests" or "11:30 AM". */
-@media (max-width: 380px) {
-  .reserve__row--3 { grid-template-columns: 1fr; }
+
+/* Header + progress */
+.reserve__head { margin-bottom: 1.5rem; padding-right: 2.5rem; }
+.reserve__head h2 { font-size: clamp(1.8rem, 4.6vw, 2.35rem); line-height: 1.05; margin: .5rem 0 .9rem; }
+@media (min-width: 900px) { .reserve__head { padding-right: 2rem; } }
+.reserve__steps { display: flex; flex-wrap: wrap; gap: .45rem; padding: 0; list-style: none; }
+.reserve__steps li {
+  display: inline-flex; align-items: center; gap: .45rem;
+  padding: .3rem .8rem .3rem .3rem; border-radius: 999px;
+  font-size: .8rem; font-weight: 800;
+  background: var(--cream-deep); color: var(--ink-muted);
+  transition: background .2s, color .2s;
 }
+.reserve__steps li span {
+  width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%;
+  background: var(--white); font-size: .72rem;
+}
+.reserve__steps li[aria-current="step"] { background: var(--cocoa); color: var(--white); }
+.reserve__steps li[aria-current="step"] span { background: var(--sunny); color: var(--cocoa); }
+.reserve__steps li.is-done { background: var(--sunny-soft); color: var(--cocoa); }
+
+/* Blocks inside a step */
+.reserve__step { display: grid; gap: 1.45rem; }
+.reserve__step[data-step="2"] { gap: 1rem; }
+.reserve__block { border: 0; padding: 0; margin: 0; min-width: 0; }
+.reserve__label { display: block; padding: 0; margin-bottom: .65rem; font-weight: 800; font-size: 1rem; }
+.reserve__label-note { font-weight: 600; font-size: .85rem; color: var(--ink-muted); }
+.reserve__note { margin-top: .55rem; font-size: .86rem; font-weight: 700; color: var(--sunny-deep); }
+
+/* Guests stepper */
+.stepper {
+  display: inline-flex; align-items: center; gap: .3rem;
+  padding: .3rem; border-radius: 999px;
+  background: var(--white); border: 2px solid var(--cocoa); box-shadow: 0 3px 0 var(--cocoa);
+}
+.stepper__btn {
+  width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%;
+  background: var(--sunny); color: var(--cocoa);
+  transition: transform .12s, opacity .2s;
+}
+.stepper__btn svg { width: 18px; height: 18px; }
+.stepper__btn:active { transform: scale(.9); }
+.stepper__btn:disabled { background: var(--cream-deep); opacity: .55; cursor: not-allowed; }
+.stepper__value { min-width: 7.2rem; text-align: center; font-weight: 800; font-size: 1.05rem; }
+
+/* Day strip */
+.days {
+  display: flex; gap: .6rem;
+  overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: thin;
+  padding: .35rem .3rem .9rem; margin: 0 -.3rem;
+}
+.day { flex: 0 0 auto; position: relative; scroll-snap-align: start; cursor: pointer; }
+.day input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+button.day { padding: 0; }
+.day__face {
+  display: grid; justify-items: center; align-content: center; gap: .05rem;
+  width: 80px; min-height: 92px; padding: .55rem .2rem;
+  background: var(--white); color: var(--cocoa);
+  border: 2px solid var(--cocoa); border-radius: 18px;
+  box-shadow: 0 4px 0 var(--cocoa);
+  transition: transform .14s cubic-bezier(.34,1.56,.64,1), background .15s, box-shadow .14s;
+}
+.day:hover .day__face { transform: translateY(-2px); box-shadow: 0 6px 0 var(--cocoa); }
+.day__top { font-size: .68rem; font-weight: 800; letter-spacing: .03em; white-space: nowrap; text-transform: uppercase; color: var(--ink-muted); }
+.day__num { font-size: 1.6rem; font-weight: 800; line-height: 1.1; }
+.day__month { font-size: .74rem; font-weight: 700; color: var(--ink-muted); }
+.day input:checked + .day__face { background: var(--sunny); transform: translateY(-2px); box-shadow: 0 6px 0 var(--cocoa); }
+.day input:checked + .day__face .day__top,
+.day input:checked + .day__face .day__month { color: var(--cocoa); }
+.day input:focus-visible + .day__face,
+button.day:focus-visible .day__face { outline: 3px solid var(--sunny-deep); outline-offset: 3px; }
+button.day:focus-visible { outline: none; }
+.day--more .day__face { background: var(--cream); border-style: dashed; box-shadow: none; }
+.day--more svg { width: 22px; height: 22px; margin-bottom: .2rem; }
+.reserve__picker { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+.reserve__picker.is-shown {
+  position: static; opacity: 1; width: 100%; height: auto; pointer-events: auto;
+  margin-top: .3rem; font: inherit; font-size: max(16px, 1rem); padding: .7rem .9rem;
+  border: 2px solid var(--cocoa); border-radius: var(--r-sm); background: var(--white);
+}
+
+/* Time chips */
+.times__group + .times__group { margin-top: 1rem; }
+.times__label { font-size: .72rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: .5rem; }
+.times__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: .55rem; }
+.time { position: relative; cursor: pointer; }
+.time input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+.time__face {
+  display: block; text-align: center; white-space: nowrap;
+  padding: .6rem .3rem; min-height: 44px;
+  font-weight: 700; font-size: .95rem;
+  background: var(--white); border: 2px solid var(--cocoa); border-radius: 999px;
+  box-shadow: 0 3px 0 var(--cocoa);
+  transition: transform .12s, background .15s, box-shadow .12s;
+}
+.time:hover .time__face { transform: translateY(-2px); box-shadow: 0 5px 0 var(--cocoa); }
+.time input:checked + .time__face { background: var(--sunny); font-weight: 800; transform: translateY(-2px); box-shadow: 0 5px 0 var(--cocoa); }
+.time input:focus-visible + .time__face { outline: 3px solid var(--sunny-deep); outline-offset: 2px; }
+.times__empty {
+  padding: 1rem; text-align: center; font-size: .92rem; color: var(--ink-muted);
+  border: 2px dashed #d9c9b6; border-radius: 16px;
+}
+[aria-invalid="true"] > .times__empty, .days[aria-invalid="true"] .day__face,
+.times[aria-invalid="true"] .time__face { border-color: #c2361b; }
+
+.reserve__cta { width: 100%; }
+.reserve__cta svg { width: 20px; height: 20px; }
+
+/* Step 2 */
+.recap {
+  display: flex; align-items: center; gap: .7rem;
+  padding: .75rem .9rem; border-radius: 16px;
+  background: var(--sunny-soft); border: 2px solid var(--cocoa);
+}
+.recap__icon svg { width: 22px; height: 22px; display: block; }
+.recap__text { font-weight: 800; font-size: .96rem; line-height: 1.3; }
+.recap__change { margin-left: auto; font-weight: 800; font-size: .88rem; text-decoration: underline; text-underline-offset: 3px; padding: .3rem .2rem; }
+
+.reserve__row { display: grid; gap: 1rem; grid-template-columns: 1fr 1fr; }
+@media (max-width: 560px) { .reserve__row { grid-template-columns: 1fr; } }
 
 .rfield { display: grid; gap: .35rem; min-width: 0; }
-.rfield label { font-weight: 700; font-size: .92rem; }
+.rfield label { font-weight: 800; font-size: .95rem; }
 .rfield__optional {
-  margin-left: .35rem; font-weight: 600; font-size: .78rem; color: var(--ink-muted);
+  margin-left: .35rem; padding: .1rem .5rem; border-radius: 999px;
+  background: var(--cream-deep); font-weight: 700; font-size: .72rem; color: var(--ink-muted);
 }
 /* 16px or more, or iOS zooms the page in on focus. */
-.rfield input, .rfield select, .rfield textarea {
+.rfield input, .rfield textarea {
   width: 100%; min-width: 0;
   font: inherit; font-size: max(16px, 1rem); color: var(--cocoa);
   background: var(--white);
-  border: 2px solid var(--cocoa); border-radius: var(--r-sm);
-  padding: .72rem .9rem;
-  min-height: 50px;
+  border: 2px solid var(--cocoa); border-radius: 14px;
+  padding: .75rem .95rem; min-height: 50px;
   transition: border-color .15s, box-shadow .15s;
 }
-.rfield input[type="date"] { -webkit-appearance: none; appearance: none; }
-.rfield select {
-  -webkit-appearance: none; appearance: none;
-  padding-right: 2.4rem;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2330221d' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right .8rem center; background-size: 16px;
-}
-.rfield select:disabled { background-color: var(--cream-deep); color: var(--ink-muted); border-color: #d9c9b6; cursor: not-allowed; }
 .rfield textarea { resize: vertical; min-height: 88px; }
-.rfield input:focus, .rfield select:focus, .rfield textarea:focus {
-  outline: none; border-color: var(--cocoa); box-shadow: 0 0 0 4px rgba(253, 177, 0, .55);
+.rfield input:focus, .rfield textarea:focus {
+  outline: none; box-shadow: 0 0 0 4px rgba(253, 177, 0, .6);
 }
 .rfield [aria-invalid="true"] { border-color: #c2361b; }
 .rfield [aria-invalid="true"]:focus { box-shadow: 0 0 0 4px rgba(194, 54, 27, .22); }
-.rfield__error { color: #b02f16; font-size: .84rem; font-weight: 600; line-height: 1.35; }
+.rfield__error { color: #b02f16; font-size: .84rem; font-weight: 700; line-height: 1.35; margin-top: .45rem; }
+.rfield .rfield__error { margin-top: 0; }
 
-.reserve__hint { font-size: .86rem; color: var(--ink-muted); margin-top: -.2rem; }
-.reserve__hint:empty { display: none; }
 .reserve__trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
-
 .reserve__status {
-  padding: .85rem 1rem; border-radius: var(--r-sm);
+  padding: .85rem 1rem; border-radius: 14px;
   background: #fde8e2; border: 2px solid #e8a595; color: #7a2412;
   font-size: .92rem; font-weight: 600;
 }
 .reserve__status a { text-decoration: underline; white-space: nowrap; }
-.reserve__submit { width: 100%; }
-.reserve__submit:disabled { opacity: .7; cursor: progress; transform: none; }
+.reserve__cta:disabled { opacity: .7; cursor: progress; transform: none; }
 .reserve__fine { font-size: .84rem; color: var(--ink-muted); text-align: center; }
 .reserve__fine a { color: var(--cocoa); font-weight: 700; text-decoration: underline; white-space: nowrap; }
 
-.reserve__done { text-align: center; display: grid; gap: .9rem; justify-items: center; padding: 1rem 0 .4rem; outline: none; }
-.reserve__done h2 { font-size: clamp(1.9rem, 5vw, 2.5rem); line-height: 1.05; }
-.reserve__done p { max-width: 42ch; }
-.reserve__done-mark {
-  width: 76px; height: 76px; display: grid; place-items: center;
-  border-radius: 50%; background: var(--sunny); color: var(--cocoa);
-  border: 3px solid var(--cocoa); box-shadow: 0 5px 0 var(--cocoa);
+/* Sent: a ticket with a tear-off stub */
+.reserve__done { display: grid; gap: 1rem; outline: none; padding-top: .4rem; }
+.ticket {
+  background: var(--white); border: 3px solid var(--cocoa); border-radius: 24px;
+  box-shadow: 0 6px 0 var(--cocoa); overflow: hidden;
+  animation: ticket-in .45s cubic-bezier(.34,1.5,.64,1);
 }
-.reserve__done-mark svg { width: 38px; height: 38px; }
-.reserve__done .btn { margin-top: .4rem; }
+@keyframes ticket-in { from { opacity: 0; transform: translateY(14px) rotate(-1.5deg); } }
+.ticket__head { background: var(--cocoa); color: var(--white); text-align: center; padding: 1.6rem 1.2rem 1.35rem; }
+.ticket__head h2 { font-size: clamp(1.9rem, 5vw, 2.4rem); line-height: 1.05; margin: .7rem 0 .4rem; }
+.ticket__head p { color: rgba(255,255,255,.8); font-size: .95rem; overflow-wrap: anywhere; }
+.ticket__head strong { color: var(--white); }
+.ticket__mark {
+  width: 62px; height: 62px; margin: 0 auto; display: grid; place-items: center;
+  border-radius: 50%; background: var(--sunny); color: var(--cocoa);
+  animation: mark-pop .5s .15s cubic-bezier(.34,1.8,.64,1) both;
+}
+@keyframes mark-pop { from { transform: scale(0); } }
+.ticket__mark svg { width: 32px; height: 32px; }
+.ticket__rows { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 1.2rem; padding: 1.25rem 1.4rem; margin: 0; }
+.ticket__rows dt { font-size: .7rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted); }
+.ticket__rows dd { margin: .1rem 0 0; font-weight: 800; font-size: 1.05rem; line-height: 1.25; overflow-wrap: anywhere; }
+.ticket__stub { position: relative; border-top: 2px dashed #d9c9b6; padding: 1.2rem 1.4rem 1.4rem; background: #fffdf8; }
+.ticket__stub::before, .ticket__stub::after {
+  content: ""; position: absolute; top: -14px; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--cream); border: 3px solid var(--cocoa);
+}
+.ticket__stub::before { left: -16px; }
+.ticket__stub::after { right: -16px; }
+.ticket__stub-title { font-weight: 800; }
+.ticket__stub-text { font-size: .9rem; color: var(--ink-muted); margin-top: .15rem; }
+.ticket__cal { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: .95rem; }
+.ticket__cal .btn { flex: 1 1 170px; }
+.ticket__cal svg { width: 18px; height: 18px; }
+.reserve__done-close {
+  justify-self: center; padding: .7rem 2.2rem; border-radius: 999px;
+  border: 2px solid var(--cocoa); font-weight: 800;
+  transition: background .15s;
+}
+.reserve__done-close:hover { background: var(--cream-deep); }
 
 /* --- Utility / motion -------------------------------------------- */
 .reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.8,.2,1); }
@@ -2557,91 +2728,156 @@ html:has(.reserve[open]) { overflow: hidden; }
      arriving at mbdchicago.com/#reserve. Behaviour: assets/js/main.js,
      settings: `reservations` in assets/data/content.js. -->
 <dialog class="reserve" id="reserve" aria-labelledby="reserve-title">
+  <button class="reserve__close" type="button" data-reserve-close aria-label="Close">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+
   <div class="reserve__card">
-    <button class="reserve__close" type="button" data-reserve-close aria-label="Close">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    </button>
-
-    <div class="reserve__form-view" data-reserve-form-view>
-      <header class="reserve__head">
-        <span class="eyebrow">Reserve a Table</span>
-        <h2 id="reserve-title">Save Us a <span class="script">Seat.</span></h2>
-        <p>Tell us when you're coming and we'll confirm by phone or email.</p>
-      </header>
-
-      <form class="reserve__form" data-reserve-form novalidate>
-        <fieldset class="reserve__group">
-          <legend>When</legend>
-          <div class="reserve__row reserve__row--3">
-            <div class="rfield">
-              <label for="r-date">Date</label>
-              <input id="r-date" name="date" type="date" required>
-              <p class="rfield__error" id="r-date-err" hidden></p>
-            </div>
-            <div class="rfield">
-              <label for="r-time">Time</label>
-              <select id="r-time" name="time" required disabled>
-                <option value="">Pick date</option>
-              </select>
-              <p class="rfield__error" id="r-time-err" hidden></p>
-            </div>
-            <div class="rfield">
-              <label for="r-party">Guests</label>
-              <select id="r-party" name="party" required></select>
-              <p class="rfield__error" id="r-party-err" hidden></p>
-            </div>
-          </div>
-          <p class="reserve__hint" data-reserve-hours></p>
-        </fieldset>
-
-        <fieldset class="reserve__group">
-          <legend>Who</legend>
-          <div class="rfield">
-            <label for="r-name">Full name</label>
-            <input id="r-name" name="name" type="text" autocomplete="name" maxlength="80" required>
-            <p class="rfield__error" id="r-name-err" hidden></p>
-          </div>
-          <div class="reserve__row">
-            <div class="rfield">
-              <label for="r-email">Email</label>
-              <input id="r-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" required>
-              <p class="rfield__error" id="r-email-err" hidden></p>
-            </div>
-            <div class="rfield">
-              <label for="r-phone">Phone</label>
-              <input id="r-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="24" required>
-              <p class="rfield__error" id="r-phone-err" hidden></p>
-            </div>
-          </div>
-          <div class="rfield">
-            <label for="r-notes">Special requests <span class="rfield__optional">Optional</span></label>
-            <textarea id="r-notes" name="notes" rows="3" maxlength="500"
-                      placeholder="High chair, a birthday, allergies, a quiet corner…"></textarea>
-          </div>
-        </fieldset>
-
-        <!-- Left empty by people, filled in by spam bots. -->
-        <input class="reserve__trap" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
-
-        <div class="reserve__status" data-reserve-status role="alert" hidden></div>
-
-        <button class="btn btn--lg reserve__submit" type="submit" data-reserve-submit>Request My Table</button>
-        <p class="reserve__fine">
-          This is a request, not a confirmed booking. Same day? Calling is quickest:
-          <a href="tel:+18722062610">(872) 206-2610</a>.
-        </p>
-      </form>
+    <!-- Decorative: a photo panel beside the form on wide screens, a
+         banner above it on phones. Everything in it is said elsewhere. -->
+    <div class="reserve__side" aria-hidden="true">
+      <img class="reserve__side-img" src="assets/img/special-berries-crepes.jpg" alt="" loading="lazy">
+      <div class="reserve__side-copy">
+        <img class="reserve__side-mark" src="assets/img/logo-mark.svg" alt="" width="56" height="57">
+        <p class="reserve__side-line"><span class="script">Good Morning</span> starts at our table.</p>
+        <ul class="reserve__side-facts">
+          <li>1924 W Irving Park Rd, Chicago</li>
+          <li>Mon–Fri 8 AM – 4 PM · Sat–Sun 7 AM – 4 PM</li>
+        </ul>
+      </div>
     </div>
 
-    <div class="reserve__done" data-reserve-done hidden tabindex="-1">
-      <span class="reserve__done-mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
-      </span>
-      <h2>Request <span class="script">Sent!</span></h2>
-      <p data-reserve-summary></p>
-      <p class="reserve__fine">We'll get back to you to confirm. Plans changed? Call us at
-        <a href="tel:+18722062610">(872) 206-2610</a>.</p>
-      <button class="btn btn--ink" type="button" data-reserve-close>Done</button>
+    <div class="reserve__main">
+      <div data-reserve-form-view>
+        <header class="reserve__head">
+          <span class="eyebrow">Reserve a Table</span>
+          <h2 id="reserve-title">Save Us a <span class="script">Seat.</span></h2>
+          <ol class="reserve__steps" aria-label="Progress">
+            <li data-step-dot="1" aria-current="step"><span>1</span> When</li>
+            <li data-step-dot="2"><span>2</span> Your details</li>
+          </ol>
+        </header>
+
+        <form class="reserve__form" data-reserve-form novalidate>
+          <!-- ---- Step 1: party, day, time ---- -->
+          <div class="reserve__step" data-step="1">
+            <div class="reserve__block">
+              <div class="reserve__label" id="r-party-label">Guests</div>
+              <div class="stepper" role="group" aria-labelledby="r-party-label">
+                <button class="stepper__btn" type="button" data-party-step="-1" aria-label="Fewer guests">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg>
+                </button>
+                <output class="stepper__value" id="r-party-out" aria-live="polite">2 guests</output>
+                <button class="stepper__btn" type="button" data-party-step="1" aria-label="More guests">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 6v12M6 12h12"/></svg>
+                </button>
+              </div>
+              <input type="hidden" name="party" id="r-party" value="2">
+              <p class="reserve__note" data-party-note hidden>Big group! We'll call you to plan the table.</p>
+            </div>
+
+            <fieldset class="reserve__block">
+              <legend class="reserve__label">Day</legend>
+              <div class="days" data-days></div>
+              <input class="reserve__picker" type="date" id="r-date-picker" tabindex="-1" aria-hidden="true">
+              <p class="rfield__error" id="r-date-err" role="alert" hidden></p>
+            </fieldset>
+
+            <fieldset class="reserve__block">
+              <legend class="reserve__label">Time <span class="reserve__label-note" data-reserve-hours></span></legend>
+              <div class="times" data-times>
+                <p class="times__empty">Pick a day to see times.</p>
+              </div>
+              <p class="rfield__error" id="r-time-err" role="alert" hidden></p>
+            </fieldset>
+
+            <button class="btn btn--lg reserve__cta" type="button" data-reserve-next>
+              Continue
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+
+          <!-- ---- Step 2: who ---- -->
+          <div class="reserve__step" data-step="2" hidden>
+            <div class="recap">
+              <span class="recap__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+              </span>
+              <span class="recap__text" data-reserve-recap></span>
+              <button class="recap__change" type="button" data-reserve-back>Change</button>
+            </div>
+
+            <div class="rfield">
+              <label for="r-name">Full name</label>
+              <input id="r-name" name="name" type="text" autocomplete="name" maxlength="80" required>
+              <p class="rfield__error" id="r-name-err" hidden></p>
+            </div>
+            <div class="reserve__row">
+              <div class="rfield">
+                <label for="r-email">Email</label>
+                <input id="r-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" required>
+                <p class="rfield__error" id="r-email-err" hidden></p>
+              </div>
+              <div class="rfield">
+                <label for="r-phone">Phone</label>
+                <input id="r-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="24" required>
+                <p class="rfield__error" id="r-phone-err" hidden></p>
+              </div>
+            </div>
+            <div class="rfield">
+              <label for="r-notes">Special requests <span class="rfield__optional">Optional</span></label>
+              <textarea id="r-notes" name="notes" rows="3" maxlength="500"
+                        placeholder="High chair, a birthday, allergies, a quiet corner…"></textarea>
+            </div>
+
+            <!-- Left empty by people, filled in by spam bots. -->
+            <input class="reserve__trap" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+            <div class="reserve__status" data-reserve-status role="alert" hidden></div>
+
+            <button class="btn btn--lg reserve__cta" type="submit" data-reserve-submit>Request My Table</button>
+            <p class="reserve__fine">
+              This is a request, not a confirmed booking. Same day? Calling is quickest:
+              <a href="tel:+18722062610">(872) 206-2610</a>.
+            </p>
+          </div>
+        </form>
+      </div>
+
+      <!-- ---- Sent ---- -->
+      <div class="reserve__done" data-reserve-done hidden tabindex="-1">
+        <div class="ticket">
+          <div class="ticket__head">
+            <span class="ticket__mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+            </span>
+            <h2>Request <span class="script">Sent!</span></h2>
+            <p>We'll confirm at <strong data-ticket-email></strong>.</p>
+          </div>
+          <dl class="ticket__rows">
+            <div><dt>Day</dt><dd data-ticket-day></dd></div>
+            <div><dt>Time</dt><dd data-ticket-time></dd></div>
+            <div><dt>Guests</dt><dd data-ticket-party></dd></div>
+            <div><dt>Name</dt><dd data-ticket-name></dd></div>
+          </dl>
+          <div class="ticket__stub">
+            <p class="ticket__stub-title">Don't forget your table</p>
+            <p class="ticket__stub-text">Add it to your calendar and your phone reminds you the day before and an hour before.</p>
+            <div class="ticket__cal">
+              <a class="btn btn--sm" data-cal-ics download="mbd-breakfast-reservation.ics">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+                Apple / Outlook
+              </a>
+              <a class="btn btn--sm btn--ink" data-cal-google target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+                Google Calendar
+              </a>
+            </div>
+          </div>
+        </div>
+        <p class="reserve__fine">Plans changed? Call us at <a href="tel:+18722062610">(872) 206-2610</a>.</p>
+        <button class="reserve__done-close" type="button" data-reserve-close>Done</button>
+      </div>
     </div>
   </div>
 </dialog>
@@ -2818,7 +3054,7 @@ window.MBD = (function () {
      restaurant confirms each one by phone or email.
   ---------------------------------------------------------- */
   const reservations = {
-    accessKey: "",
+    accessKey: "ddee47f6-9ba3-4282-8c2f-79d753479d75",
 
     slotMinutes: 30,       // times offered every 30 minutes
     lastSeating: 60,       // last table this many minutes before closing
@@ -3656,21 +3892,40 @@ window.MBD_dishId = function (sectionId, name) {
      and "today" has to mean today in Chicago. */
   const TZ = "America/Chicago";
 
-  function chicagoNow() {
+  function zonedParts(t) {
     const part = {};
     new Intl.DateTimeFormat("en-US", {
       timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit",
-      hour: "2-digit", minute: "2-digit", hourCycle: "h23"
-    }).formatToParts(new Date()).forEach((p) => { part[p.type] = p.value; });
-    return { date: `${part.year}-${part.month}-${part.day}`, mins: +part.hour * 60 + +part.minute };
+      hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23"
+    }).formatToParts(t).forEach((p) => { part[p.type] = p.value; });
+    return part;
+  }
+
+  function chicagoNow() {
+    const p = zonedParts(new Date());
+    return { date: `${p.year}-${p.month}-${p.day}`, mins: +p.hour * 60 + +p.minute };
+  }
+
+  /* A Chicago wall-clock time as a real instant, for calendar files.
+     Two passes settle the offset even on a daylight-saving changeover. */
+  function chicagoToDate(iso, mins) {
+    const [y, m, d] = iso.split("-").map(Number);
+    const wall = Date.UTC(y, m - 1, d, Math.floor(mins / 60), mins % 60);
+    const offset = (t) => {
+      const p = zonedParts(new Date(t));
+      return Date.UTC(+p.year, p.month - 1, +p.day, +p.hour, +p.minute, +p.second) - t;
+    };
+    let t = wall - offset(wall);
+    t = wall - offset(t);
+    return new Date(t);
   }
 
   // Calendar arithmetic on "YYYY-MM-DD" strings, done in UTC so no
   // local offset or daylight-saving change can shift the day.
   const isoToUTC = (iso) => { const [y, m, d] = iso.split("-").map(Number); return new Date(Date.UTC(y, m - 1, d)); };
   const addDays  = (iso, n) => { const t = isoToUTC(iso); t.setUTCDate(t.getUTCDate() + n); return t.toISOString().slice(0, 10); };
-  const longDate = (iso) => isoToUTC(iso).toLocaleDateString("en-US",
-    { timeZone: "UTC", weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  const fmtDay   = (iso, opts) => isoToUTC(iso).toLocaleDateString("en-US", { timeZone: "UTC", ...opts });
+  const longDate = (iso) => fmtDay(iso, { weekday: "long", month: "long", day: "numeric", year: "numeric" });
 
   function hoursOn(iso) {
     return D.business.hours.find((h) => h.idx === isoToUTC(iso).getUTCDay());
@@ -3694,76 +3949,230 @@ window.MBD_dishId = function (sectionId, name) {
     return out;
   }
 
+  /* ---- "Add to calendar": the guest's own phone does the reminding. */
+  const icsStamp = (d) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const icsText = (s) => String(s).replace(/\\/g, "\\\\").replace(/;/g, "\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
+  // RFC 5545 caps lines at 75 octets; longer ones continue on a line
+  // that starts with a space. Split on characters, counting bytes.
+  function icsFold(line) {
+    const out = [];
+    let cur = "", bytes = 0;
+    for (const ch of line) {
+      const n = new TextEncoder().encode(ch).length;
+      if (bytes + n > (out.length ? 74 : 75)) { out.push(cur); cur = ""; bytes = 0; }
+      cur += ch; bytes += n;
+    }
+    out.push(cur);
+    return out.join("\r\n ");
+  }
+
+  function calendarLinks(b) {
+    const B = D.business;
+    const start = chicagoToDate(b.iso, b.mins);
+    const end = new Date(start.getTime() + 90 * 60000);
+    const title = `Breakfast at ${B.name}`;
+    const details = `Table for ${b.party}, under ${b.name}. Requested on ${location.host || "mbdchicago.com"}; ` +
+      `we'll confirm by phone or email.\nPlans changed? Call ${B.phone}.`;
+
+    const ics = [
+      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Morning Breakfast Delight//Reservations//EN",
+      "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+      "BEGIN:VEVENT",
+      `UID:${icsStamp(new Date())}-${Math.random().toString(36).slice(2, 10)}@mbdchicago.com`,
+      `DTSTAMP:${icsStamp(new Date())}`,
+      `DTSTART:${icsStamp(start)}`,
+      `DTEND:${icsStamp(end)}`,
+      `SUMMARY:${icsText(title)}`,
+      `LOCATION:${icsText(B.address)}`,
+      `DESCRIPTION:${icsText(details)}`,
+      "URL:https://mbdchicago.com/",
+      "BEGIN:VALARM", "ACTION:DISPLAY", `DESCRIPTION:${icsText(title + " tomorrow")}`, "TRIGGER:-P1D", "END:VALARM",
+      "BEGIN:VALARM", "ACTION:DISPLAY", `DESCRIPTION:${icsText(title + " in an hour")}`, "TRIGGER:-PT1H", "END:VALARM",
+      "END:VEVENT", "END:VCALENDAR"
+    ].map(icsFold).join("\r\n") + "\r\n";
+
+    const google = "https://calendar.google.com/calendar/render?" + new URLSearchParams({
+      action: "TEMPLATE",
+      text: title,
+      dates: `${icsStamp(start)}/${icsStamp(end)}`,
+      details,
+      location: B.address,
+      ctz: TZ
+    }).toString();
+
+    return { ics: "data:text/calendar;charset=utf-8," + encodeURIComponent(ics), google };
+  }
+
   function initReserve() {
     const dialog = $("#reserve");
     const R = D.reservations;
     if (!dialog || !R) return;
 
-    const form    = $("[data-reserve-form]", dialog);
+    const form     = $("[data-reserve-form]", dialog);
     const formView = $("[data-reserve-form-view]", dialog);
-    const done    = $("[data-reserve-done]", dialog);
-    const status  = $("[data-reserve-status]", dialog);
-    const submit  = $("[data-reserve-submit]", dialog);
-    const hint    = $("[data-reserve-hours]", dialog);
+    const done     = $("[data-reserve-done]", dialog);
+    const status   = $("[data-reserve-status]", dialog);
+    const submit   = $("[data-reserve-submit]", dialog);
+    const card     = $(".reserve__card", dialog);
+    const main     = $(".reserve__main", dialog);
+    // Phones scroll the whole card; wide screens scroll the form column.
+    const toTop = () => { card.scrollTop = 0; main.scrollTop = 0; };
+    const daysEl   = $("[data-days]", dialog);
+    const timesEl  = $("[data-times]", dialog);
+    const hint     = $("[data-reserve-hours]", dialog);
+    const picker   = $("#r-date-picker", dialog);
+    const steps    = $$("[data-step]", dialog);
     const f = {
-      date: $("#r-date", dialog), time: $("#r-time", dialog), party: $("#r-party", dialog),
+      party: $("#r-party", dialog),
       name: $("#r-name", dialog), email: $("#r-email", dialog), phone: $("#r-phone", dialog),
       notes: $("#r-notes", dialog)
     };
     const phoneHref = D.business.phoneHref, phone = D.business.phone;
+    const VISIBLE_DAYS = 14;
 
-    // Party size: 1..maxParty, then one "and up" option for big groups.
+    const state = { iso: "", mins: null, party: 2 };
+    const maxParty = R.maxParty + 1;   // the last step is "13+"
     const partyLabel = (n) => n > R.maxParty ? `${R.maxParty + 1}+ guests` : `${n} guest${n === 1 ? "" : "s"}`;
-    f.party.innerHTML = Array.from({ length: R.maxParty + 1 }, (_, i) => i + 1)
-      .map((n) => `<option value="${n}"${n === 2 ? " selected" : ""}>${partyLabel(n)}</option>`).join("");
 
-    // The bookable window. If today has no slots left, it starts tomorrow.
+    /* ---- Guests ------------------------------------------- */
+    function setParty(n) {
+      state.party = Math.min(maxParty, Math.max(1, n));
+      f.party.value = String(state.party);
+      $("#r-party-out", dialog).textContent = partyLabel(state.party);
+      $('[data-party-step="-1"]', dialog).disabled = state.party <= 1;
+      $('[data-party-step="1"]', dialog).disabled = state.party >= maxParty;
+      $("[data-party-note]", dialog).hidden = state.party <= R.maxParty;
+    }
+    $$("[data-party-step]", dialog).forEach((btn) =>
+      btn.addEventListener("click", () => setParty(state.party + +btn.dataset.partyStep)));
+
+    /* ---- Days: a strip of the next two weeks, plus a picker for later. */
     let first, last;
     function setWindow() {
       const today = chicagoNow().date;
       first = slotsOn(today).length ? today : addDays(today, 1);
       last  = addDays(today, R.daysAhead);
-      f.date.min = first;
-      f.date.max = last;
+      picker.min = first;
+      picker.max = last;
     }
 
-    function fillTimes() {
-      const iso = f.date.value;
-      const keep = f.time.value;
-      const inRange = iso && iso >= first && iso <= last;
-      const slots = inRange ? slotsOn(iso) : [];
-      if (!inRange) {
-        f.time.innerHTML = '<option value="">Pick date</option>';
-        f.time.disabled = true;
+    function dayChip(iso) {
+      const today = chicagoNow().date;
+      const top = iso === today ? "Today" : iso === addDays(today, 1) ? "Tomorrow" : fmtDay(iso, { weekday: "short" });
+      return `
+        <label class="day">
+          <input type="radio" name="date" value="${iso}"${iso === state.iso ? " checked" : ""}>
+          <span class="day__face">
+            <span class="day__top">${top}</span>
+            <span class="day__num">${fmtDay(iso, { day: "numeric" })}</span>
+            <span class="day__month">${fmtDay(iso, { month: "short" })}</span>
+          </span>
+          <span class="sr-only">${longDate(iso)}</span>
+        </label>`;
+    }
+
+    function renderDays() {
+      const list = [];
+      for (let i = 0; i < VISIBLE_DAYS; i++) {
+        const iso = addDays(first, i);
+        if (iso > last) break;
+        list.push(iso);
+      }
+      // A date chosen from the picker beyond the strip gets its own chip.
+      if (state.iso && !list.includes(state.iso)) list.push(state.iso);
+      daysEl.innerHTML = list.map(dayChip).join("") + `
+        <button class="day day--more" type="button" data-more-dates>
+          <span class="day__face">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+            <span class="day__top">More</span>
+            <span class="day__month">dates</span>
+          </span>
+        </button>`;
+    }
+
+    function chooseDay(iso, { scroll } = {}) {
+      state.iso = iso;
+      if (state.mins !== null && !slotsOn(iso).includes(state.mins)) state.mins = null;
+      renderDays();
+      renderTimes();
+      showError("date", "");
+      const chip = $(`.day input[value="${iso}"]`, daysEl);
+      if (chip && scroll) chip.closest(".day").scrollIntoView({ block: "nearest", inline: "center" });
+    }
+
+    daysEl.addEventListener("change", (e) => {
+      if (e.target.name === "date") chooseDay(e.target.value);
+    });
+    daysEl.addEventListener("click", (e) => {
+      if (!e.target.closest("[data-more-dates]")) return;
+      picker.value = state.iso || "";
+      try { picker.showPicker(); }
+      catch (_) { picker.classList.add("is-shown"); picker.focus(); }   // browsers without showPicker()
+    });
+    picker.addEventListener("change", () => {
+      const v = picker.value;
+      picker.classList.remove("is-shown");
+      if (!v) return;
+      if (v < first || v > last) { showError("date", `Pick a day between today and ${fmtDay(last, { month: "long", day: "numeric" })}.`); return; }
+      chooseDay(v, { scroll: true });
+    });
+
+    /* ---- Times, grouped into morning and afternoon. */
+    function renderTimes() {
+      if (!state.iso) {
+        timesEl.innerHTML = '<p class="times__empty">Pick a day to see times.</p>';
         hint.textContent = "";
         return;
       }
-      const h = hoursOn(iso);
+      const h = hoursOn(state.iso);
+      hint.textContent = `· ${fmtDay(state.iso, { weekday: "long" })} ${h.open} – ${toClock(toMinutes(h.close) - R.lastSeating)}`;
+      const slots = slotsOn(state.iso);
       if (!slots.length) {
-        f.time.innerHTML = '<option value="">None left</option>';
-        f.time.disabled = true;
-      } else {
-        f.time.innerHTML = '<option value="">Choose…</option>' + slots.map((t) => {
-          const c = toClock(t);
-          return `<option value="${c}"${c === keep ? " selected" : ""}>${c}</option>`;
-        }).join("");
-        f.time.disabled = false;
+        timesEl.innerHTML = '<p class="times__empty">No times left that day — pick another.</p>';
+        return;
       }
-      hint.textContent = `${h.day}: we seat from ${h.open} to ${toClock(toMinutes(h.close) - R.lastSeating)}.`;
+      const group = (label, list) => !list.length ? "" : `
+        <div class="times__group">
+          <p class="times__label">${label}</p>
+          <div class="times__grid">${list.map((t) => `
+            <label class="time">
+              <input type="radio" name="time" value="${t}"${t === state.mins ? " checked" : ""}>
+              <span class="time__face">${toClock(t)}</span>
+            </label>`).join("")}
+          </div>
+        </div>`;
+      timesEl.innerHTML = group("Morning", slots.filter((t) => t < 720)) + group("Afternoon", slots.filter((t) => t >= 720));
+    }
+    timesEl.addEventListener("change", (e) => {
+      if (e.target.name !== "time") return;
+      state.mins = +e.target.value;
+      showError("time", "");
+    });
+
+    /* ---- Errors: one message per field, shown on Continue / submit,
+       cleared as soon as the guest fixes that field. */
+    const errorTarget = {
+      date: () => daysEl, time: () => timesEl,
+      name: () => f.name, email: () => f.email, phone: () => f.phone
+    };
+    function showError(key, msg) {
+      const el = errorTarget[key](), err = $(`#r-${key}-err`, dialog);
+      el.setAttribute("aria-invalid", msg ? "true" : "false");
+      if (msg) el.setAttribute("aria-describedby", err.id); else el.removeAttribute("aria-describedby");
+      err.textContent = msg;
+      err.hidden = !msg;
     }
 
-    /* ---- Validation: one message per field, shown on submit and
-       cleared as soon as the guest edits that field. */
-    const checks = {
+    const checks1 = {
       date: () => {
-        const v = f.date.value;
-        if (!v) return "Pick a date.";
-        if (v < first) return "That date has passed — pick another.";
-        if (v > last) return `We take bookings up to ${R.daysAhead} days ahead.`;
+        if (!state.iso) return "Pick a day.";
+        if (state.iso < first) return "That day has passed — pick another.";
+        if (state.iso > last) return `We take bookings up to ${R.daysAhead} days ahead.`;
         return "";
       },
-      time: () => (f.time.value ? "" : (f.time.disabled && f.date.value ? "No times left that day — pick another date." : "Pick a time.")),
-      party: () => (f.party.value ? "" : "How many guests?"),
+      time: () => (state.mins !== null && slotsOn(state.iso).includes(state.mins) ? "" : "Pick a time.")
+    };
+    const checks2 = {
       name: () => (f.name.value.trim().length >= 2 ? "" : "Please enter your name."),
       email: () => {
         const v = f.email.value.trim();
@@ -3775,47 +4184,65 @@ window.MBD_dishId = function (sectionId, name) {
         return digits >= 10 && digits <= 15 ? "" : "Please enter a phone number we can call.";
       }
     };
-
-    function showError(key, msg) {
-      const input = f[key], err = $(`#r-${key}-err`, dialog);
-      input.setAttribute("aria-invalid", msg ? "true" : "false");
-      if (msg) input.setAttribute("aria-describedby", err.id); else input.removeAttribute("aria-describedby");
-      err.textContent = msg;
-      err.hidden = !msg;
-    }
-
-    function validate() {
+    function run(checks) {
       let firstBad = null;
       Object.keys(checks).forEach((key) => {
         const msg = checks[key]();
         showError(key, msg);
-        if (msg && !firstBad) firstBad = f[key];
+        if (msg && !firstBad) firstBad = key;
       });
       return firstBad;
     }
+    Object.keys(checks2).forEach((key) => {
+      f[key].addEventListener("input", () => { if (f[key].getAttribute("aria-invalid") === "true") showError(key, ""); });
+    });
+
+    /* ---- Steps -------------------------------------------- */
+    const summary = () => `${fmtDay(state.iso, { weekday: "short", month: "short", day: "numeric" })} · ${toClock(state.mins)} · ${partyLabel(state.party)}`;
+
+    function goStep(n, { focus = true } = {}) {
+      steps.forEach((st) => { st.hidden = st.dataset.step !== String(n); });
+      $$("[data-step-dot]", dialog).forEach((dot) => {
+        const k = +dot.dataset.stepDot;
+        if (k === n) dot.setAttribute("aria-current", "step"); else dot.removeAttribute("aria-current");
+        dot.classList.toggle("is-done", k < n);
+      });
+      if (n === 2) $("[data-reserve-recap]", dialog).textContent = summary();
+      toTop();
+      if (!focus) return;
+      if (n === 2) f.name.focus();
+      else ($('.day input:checked', daysEl) || $(".day input", daysEl) || daysEl).focus();
+    }
+
+    $("[data-reserve-next]", dialog).addEventListener("click", () => {
+      const bad = run(checks1);
+      if (bad) {
+        const target = bad === "date" ? $(".day input", daysEl) : $(".time input", timesEl);
+        errorTarget[bad]().scrollIntoView({ block: "center", behavior: "smooth" });
+        if (target) target.focus({ preventScroll: true });
+        return;
+      }
+      goStep(2);
+    });
+    $("[data-reserve-back]", dialog).addEventListener("click", () => goStep(1));
 
     function setStatus(html) {
       status.innerHTML = html || "";
       status.hidden = !html;
     }
 
-    Object.keys(checks).forEach((key) => {
-      const clear = () => { if (f[key].getAttribute("aria-invalid") === "true") showError(key, ""); };
-      f[key].addEventListener("input", clear);
-      f[key].addEventListener("change", clear);
-    });
-    f.date.addEventListener("change", fillTimes);
-    f.date.addEventListener("input", fillTimes);
-
     function reset() {
       form.reset();
-      f.party.value = "2";
-      Object.keys(checks).forEach((key) => showError(key, ""));
+      state.iso = ""; state.mins = null;
+      setParty(2);
+      ["date", "time", ...Object.keys(checks2)].forEach((key) => showError(key, ""));
       setStatus("");
       formView.hidden = false;
       done.hidden = true;
       setWindow();
-      fillTimes();
+      renderDays();
+      renderTimes();
+      goStep(1, { focus: false });
     }
 
     /* ---- Open / close ------------------------------------- */
@@ -3823,7 +4250,9 @@ window.MBD_dishId = function (sectionId, name) {
     function open() {
       if (sent) { reset(); sent = false; }
       setWindow();   // the window moves if the page sat open past a slot or midnight
-      fillTimes();
+      if (state.iso && (state.iso < first || state.iso > last)) { state.iso = ""; state.mins = null; }
+      renderDays();
+      renderTimes();
       if (dialog.open) return;
       if (typeof dialog.showModal === "function") dialog.showModal();
       else dialog.setAttribute("open", "");
@@ -3861,8 +4290,10 @@ window.MBD_dishId = function (sectionId, name) {
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       setStatus("");
-      const bad = validate();
-      if (bad) { bad.focus(); return; }
+      // Step 1 can only have gone stale if the page sat open for a while.
+      if (run(checks1)) { goStep(1); return; }
+      const bad = run(checks2);
+      if (bad) { f[bad].focus(); return; }
 
       const callUs = `<a href="${esc(phoneHref)}">${esc(phone)}</a>`;
       if (!R.accessKey) {
@@ -3870,20 +4301,29 @@ window.MBD_dishId = function (sectionId, name) {
         return;
       }
 
-      const party = partyLabel(+f.party.value);
-      const date = longDate(f.date.value);
-      const time = f.time.value;
-      const name = f.name.value.trim();
-      const email = f.email.value.trim();
-      const summary = `${party} on ${date} at ${time}`;
+      const booking = {
+        iso: state.iso, mins: state.mins,
+        party: partyLabel(state.party),
+        date: longDate(state.iso),
+        time: toClock(state.mins),
+        name: f.name.value.trim(),
+        email: f.email.value.trim()
+      };
 
       const showDone = () => {
         sent = true;
-        $("[data-reserve-summary]", dialog).innerHTML =
-          `<strong>${esc(summary)}</strong>, under ${esc(name)}. We'll confirm at ${esc(email)}.`;
+        $("[data-ticket-day]", dialog).textContent = booking.date.replace(/, \d{4}$/, "");
+        $("[data-ticket-time]", dialog).textContent = booking.time;
+        $("[data-ticket-party]", dialog).textContent = booking.party;
+        $("[data-ticket-name]", dialog).textContent = booking.name;
+        $("[data-ticket-email]", dialog).textContent = booking.email;
+        const cal = calendarLinks(booking);
+        $("[data-cal-ics]", dialog).href = cal.ics;
+        $("[data-cal-google]", dialog).href = cal.google;
         formView.hidden = true;
         done.hidden = false;
-        done.focus();
+        toTop();
+        done.focus({ preventScroll: true });   // keep the banner in view above the ticket
       };
 
       // Filled in by a bot: look successful, send nothing.
@@ -3900,15 +4340,15 @@ window.MBD_dishId = function (sectionId, name) {
           signal: timeout.signal,
           body: JSON.stringify({
             access_key: R.accessKey,
-            subject: `Table request: ${name}, ${party}, ${date} at ${time}`,
+            subject: `Table request: ${booking.name}, ${booking.party}, ${booking.date} at ${booking.time}`,
             from_name: `${D.business.name} website`,
-            replyto: email,
-            "Name": name,
-            "Email": email,
+            replyto: booking.email,
+            "Name": booking.name,
+            "Email": booking.email,
             "Phone": f.phone.value.trim(),
-            "Date": date,
-            "Time": time,
-            "Guests": party,
+            "Date": booking.date,
+            "Time": booking.time,
+            "Guests": booking.party,
             "Special requests": f.notes.value.trim() || "None"
           })
         });
@@ -3925,8 +4365,10 @@ window.MBD_dishId = function (sectionId, name) {
       }
     });
 
+    setParty(2);
     setWindow();
-    fillTimes();
+    renderDays();
+    renderTimes();
   }
 
   /* ---------- Boot ----------------------------------------- */

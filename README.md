@@ -126,9 +126,11 @@ rather than a link out. That is how **Reserve a Table** opens the booking form.
 
 ### Table reservations
 
-The **Reserve a Table** tile opens a form asking for full name, email, phone,
-date, time, number of guests and (optionally) special requests. Each request is
-emailed to the restaurant. The form also opens from any link to `#reserve`, so
+The **Reserve a Table** tile opens a booking form in two steps — first *when*
+(guests, a strip of the next two weeks plus a picker for later dates, and the
+open times as buttons), then *who* (full name, email, phone and optional special
+requests). Each request is emailed to the restaurant, and the guest gets a
+ticket repeating the booking back. The form also opens from any link to `#reserve`, so
 `https://mbdchicago.com/#reserve` is a direct link to it — that is the address
 to give Google Business Profile as the reservation link.
 
@@ -148,6 +150,19 @@ The key is designed to sit in a public page: it can only send to the inbox it
 was created for, and that address never appears in the site's code. The free
 plan covers 250 requests a month. Until a key is set, the form still opens, but
 on submit it tells the guest to phone instead of pretending to send.
+
+**Reminders for the guest.** The ticket has *Add to calendar* buttons: an `.ics`
+file for Apple Calendar and Outlook, and a Google Calendar link. The `.ics`
+event carries two alerts — the day before and an hour before — so the guest's
+own phone does the reminding, for free, with nothing to run. (Google Calendar
+links cannot set alerts; Google applies the guest's default notification.)
+
+An *email* to the guest is a different matter. An instant confirmation needs
+Web3Forms' autoresponder, which is a paid Pro feature. A reminder sent the day
+before needs something that runs on a schedule, which a static site does not
+have — it would take a small backend (for example the Supabase project the
+price editor already uses, plus an email sender such as Resend, with the
+domain verified in DNS).
 
 **These are requests, not confirmed bookings.** Nothing checks availability, so
 each one needs a reply from the restaurant. The form says so, and the
@@ -187,7 +202,6 @@ as a pill.
 | 3 | *(nothing — both menus are transcribed from source documents)* | |
 | 4 | **Review names** | Quotes are real and pulled from public Google/Yelp listings, attributed generically. Add reviewer first names if you want them shown. |
 | 5 | **Brand fonts** | See below. |
-| 6 | **Reservation inbox** | One free key from web3forms.com in `const reservations` — see *Table reservations* above. |
 
 ### Where the menu data comes from
 

@@ -400,21 +400,40 @@
      and "today" has to mean today in Chicago. */
   const TZ = "America/Chicago";
 
-  function chicagoNow() {
+  function zonedParts(t) {
     const part = {};
     new Intl.DateTimeFormat("en-US", {
       timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit",
-      hour: "2-digit", minute: "2-digit", hourCycle: "h23"
-    }).formatToParts(new Date()).forEach((p) => { part[p.type] = p.value; });
-    return { date: `${part.year}-${part.month}-${part.day}`, mins: +part.hour * 60 + +part.minute };
+      hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23"
+    }).formatToParts(t).forEach((p) => { part[p.type] = p.value; });
+    return part;
+  }
+
+  function chicagoNow() {
+    const p = zonedParts(new Date());
+    return { date: `${p.year}-${p.month}-${p.day}`, mins: +p.hour * 60 + +p.minute };
+  }
+
+  /* A Chicago wall-clock time as a real instant, for calendar files.
+     Two passes settle the offset even on a daylight-saving changeover. */
+  function chicagoToDate(iso, mins) {
+    const [y, m, d] = iso.split("-").map(Number);
+    const wall = Date.UTC(y, m - 1, d, Math.floor(mins / 60), mins % 60);
+    const offset = (t) => {
+      const p = zonedParts(new Date(t));
+      return Date.UTC(+p.year, p.month - 1, +p.day, +p.hour, +p.minute, +p.second) - t;
+    };
+    let t = wall - offset(wall);
+    t = wall - offset(t);
+    return new Date(t);
   }
 
   // Calendar arithmetic on "YYYY-MM-DD" strings, done in UTC so no
   // local offset or daylight-saving change can shift the day.
   const isoToUTC = (iso) => { const [y, m, d] = iso.split("-").map(Number); return new Date(Date.UTC(y, m - 1, d)); };
   const addDays  = (iso, n) => { const t = isoToUTC(iso); t.setUTCDate(t.getUTCDate() + n); return t.toISOString().slice(0, 10); };
-  const longDate = (iso) => isoToUTC(iso).toLocaleDateString("en-US",
-    { timeZone: "UTC", weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  const fmtDay   = (iso, opts) => isoToUTC(iso).toLocaleDateString("en-US", { timeZone: "UTC", ...opts });
+  const longDate = (iso) => fmtDay(iso, { weekday: "long", month: "long", day: "numeric", year: "numeric" });
 
   function hoursOn(iso) {
     return D.business.hours.find((h) => h.idx === isoToUTC(iso).getUTCDay());
@@ -438,76 +457,230 @@
     return out;
   }
 
+  /* ---- "Add to calendar": the guest's own phone does the reminding. */
+  const icsStamp = (d) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const icsText = (s) => String(s).replace(/\\/g, "\\\\").replace(/;/g, "\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
+  // RFC 5545 caps lines at 75 octets; longer ones continue on a line
+  // that starts with a space. Split on characters, counting bytes.
+  function icsFold(line) {
+    const out = [];
+    let cur = "", bytes = 0;
+    for (const ch of line) {
+      const n = new TextEncoder().encode(ch).length;
+      if (bytes + n > (out.length ? 74 : 75)) { out.push(cur); cur = ""; bytes = 0; }
+      cur += ch; bytes += n;
+    }
+    out.push(cur);
+    return out.join("\r\n ");
+  }
+
+  function calendarLinks(b) {
+    const B = D.business;
+    const start = chicagoToDate(b.iso, b.mins);
+    const end = new Date(start.getTime() + 90 * 60000);
+    const title = `Breakfast at ${B.name}`;
+    const details = `Table for ${b.party}, under ${b.name}. Requested on ${location.host || "mbdchicago.com"}; ` +
+      `we'll confirm by phone or email.\nPlans changed? Call ${B.phone}.`;
+
+    const ics = [
+      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Morning Breakfast Delight//Reservations//EN",
+      "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+      "BEGIN:VEVENT",
+      `UID:${icsStamp(new Date())}-${Math.random().toString(36).slice(2, 10)}@mbdchicago.com`,
+      `DTSTAMP:${icsStamp(new Date())}`,
+      `DTSTART:${icsStamp(start)}`,
+      `DTEND:${icsStamp(end)}`,
+      `SUMMARY:${icsText(title)}`,
+      `LOCATION:${icsText(B.address)}`,
+      `DESCRIPTION:${icsText(details)}`,
+      "URL:https://mbdchicago.com/",
+      "BEGIN:VALARM", "ACTION:DISPLAY", `DESCRIPTION:${icsText(title + " tomorrow")}`, "TRIGGER:-P1D", "END:VALARM",
+      "BEGIN:VALARM", "ACTION:DISPLAY", `DESCRIPTION:${icsText(title + " in an hour")}`, "TRIGGER:-PT1H", "END:VALARM",
+      "END:VEVENT", "END:VCALENDAR"
+    ].map(icsFold).join("\r\n") + "\r\n";
+
+    const google = "https://calendar.google.com/calendar/render?" + new URLSearchParams({
+      action: "TEMPLATE",
+      text: title,
+      dates: `${icsStamp(start)}/${icsStamp(end)}`,
+      details,
+      location: B.address,
+      ctz: TZ
+    }).toString();
+
+    return { ics: "data:text/calendar;charset=utf-8," + encodeURIComponent(ics), google };
+  }
+
   function initReserve() {
     const dialog = $("#reserve");
     const R = D.reservations;
     if (!dialog || !R) return;
 
-    const form    = $("[data-reserve-form]", dialog);
+    const form     = $("[data-reserve-form]", dialog);
     const formView = $("[data-reserve-form-view]", dialog);
-    const done    = $("[data-reserve-done]", dialog);
-    const status  = $("[data-reserve-status]", dialog);
-    const submit  = $("[data-reserve-submit]", dialog);
-    const hint    = $("[data-reserve-hours]", dialog);
+    const done     = $("[data-reserve-done]", dialog);
+    const status   = $("[data-reserve-status]", dialog);
+    const submit   = $("[data-reserve-submit]", dialog);
+    const card     = $(".reserve__card", dialog);
+    const main     = $(".reserve__main", dialog);
+    // Phones scroll the whole card; wide screens scroll the form column.
+    const toTop = () => { card.scrollTop = 0; main.scrollTop = 0; };
+    const daysEl   = $("[data-days]", dialog);
+    const timesEl  = $("[data-times]", dialog);
+    const hint     = $("[data-reserve-hours]", dialog);
+    const picker   = $("#r-date-picker", dialog);
+    const steps    = $$("[data-step]", dialog);
     const f = {
-      date: $("#r-date", dialog), time: $("#r-time", dialog), party: $("#r-party", dialog),
+      party: $("#r-party", dialog),
       name: $("#r-name", dialog), email: $("#r-email", dialog), phone: $("#r-phone", dialog),
       notes: $("#r-notes", dialog)
     };
     const phoneHref = D.business.phoneHref, phone = D.business.phone;
+    const VISIBLE_DAYS = 14;
 
-    // Party size: 1..maxParty, then one "and up" option for big groups.
+    const state = { iso: "", mins: null, party: 2 };
+    const maxParty = R.maxParty + 1;   // the last step is "13+"
     const partyLabel = (n) => n > R.maxParty ? `${R.maxParty + 1}+ guests` : `${n} guest${n === 1 ? "" : "s"}`;
-    f.party.innerHTML = Array.from({ length: R.maxParty + 1 }, (_, i) => i + 1)
-      .map((n) => `<option value="${n}"${n === 2 ? " selected" : ""}>${partyLabel(n)}</option>`).join("");
 
-    // The bookable window. If today has no slots left, it starts tomorrow.
+    /* ---- Guests ------------------------------------------- */
+    function setParty(n) {
+      state.party = Math.min(maxParty, Math.max(1, n));
+      f.party.value = String(state.party);
+      $("#r-party-out", dialog).textContent = partyLabel(state.party);
+      $('[data-party-step="-1"]', dialog).disabled = state.party <= 1;
+      $('[data-party-step="1"]', dialog).disabled = state.party >= maxParty;
+      $("[data-party-note]", dialog).hidden = state.party <= R.maxParty;
+    }
+    $$("[data-party-step]", dialog).forEach((btn) =>
+      btn.addEventListener("click", () => setParty(state.party + +btn.dataset.partyStep)));
+
+    /* ---- Days: a strip of the next two weeks, plus a picker for later. */
     let first, last;
     function setWindow() {
       const today = chicagoNow().date;
       first = slotsOn(today).length ? today : addDays(today, 1);
       last  = addDays(today, R.daysAhead);
-      f.date.min = first;
-      f.date.max = last;
+      picker.min = first;
+      picker.max = last;
     }
 
-    function fillTimes() {
-      const iso = f.date.value;
-      const keep = f.time.value;
-      const inRange = iso && iso >= first && iso <= last;
-      const slots = inRange ? slotsOn(iso) : [];
-      if (!inRange) {
-        f.time.innerHTML = '<option value="">Pick date</option>';
-        f.time.disabled = true;
+    function dayChip(iso) {
+      const today = chicagoNow().date;
+      const top = iso === today ? "Today" : iso === addDays(today, 1) ? "Tomorrow" : fmtDay(iso, { weekday: "short" });
+      return `
+        <label class="day">
+          <input type="radio" name="date" value="${iso}"${iso === state.iso ? " checked" : ""}>
+          <span class="day__face">
+            <span class="day__top">${top}</span>
+            <span class="day__num">${fmtDay(iso, { day: "numeric" })}</span>
+            <span class="day__month">${fmtDay(iso, { month: "short" })}</span>
+          </span>
+          <span class="sr-only">${longDate(iso)}</span>
+        </label>`;
+    }
+
+    function renderDays() {
+      const list = [];
+      for (let i = 0; i < VISIBLE_DAYS; i++) {
+        const iso = addDays(first, i);
+        if (iso > last) break;
+        list.push(iso);
+      }
+      // A date chosen from the picker beyond the strip gets its own chip.
+      if (state.iso && !list.includes(state.iso)) list.push(state.iso);
+      daysEl.innerHTML = list.map(dayChip).join("") + `
+        <button class="day day--more" type="button" data-more-dates>
+          <span class="day__face">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+            <span class="day__top">More</span>
+            <span class="day__month">dates</span>
+          </span>
+        </button>`;
+    }
+
+    function chooseDay(iso, { scroll } = {}) {
+      state.iso = iso;
+      if (state.mins !== null && !slotsOn(iso).includes(state.mins)) state.mins = null;
+      renderDays();
+      renderTimes();
+      showError("date", "");
+      const chip = $(`.day input[value="${iso}"]`, daysEl);
+      if (chip && scroll) chip.closest(".day").scrollIntoView({ block: "nearest", inline: "center" });
+    }
+
+    daysEl.addEventListener("change", (e) => {
+      if (e.target.name === "date") chooseDay(e.target.value);
+    });
+    daysEl.addEventListener("click", (e) => {
+      if (!e.target.closest("[data-more-dates]")) return;
+      picker.value = state.iso || "";
+      try { picker.showPicker(); }
+      catch (_) { picker.classList.add("is-shown"); picker.focus(); }   // browsers without showPicker()
+    });
+    picker.addEventListener("change", () => {
+      const v = picker.value;
+      picker.classList.remove("is-shown");
+      if (!v) return;
+      if (v < first || v > last) { showError("date", `Pick a day between today and ${fmtDay(last, { month: "long", day: "numeric" })}.`); return; }
+      chooseDay(v, { scroll: true });
+    });
+
+    /* ---- Times, grouped into morning and afternoon. */
+    function renderTimes() {
+      if (!state.iso) {
+        timesEl.innerHTML = '<p class="times__empty">Pick a day to see times.</p>';
         hint.textContent = "";
         return;
       }
-      const h = hoursOn(iso);
+      const h = hoursOn(state.iso);
+      hint.textContent = `· ${fmtDay(state.iso, { weekday: "long" })} ${h.open} – ${toClock(toMinutes(h.close) - R.lastSeating)}`;
+      const slots = slotsOn(state.iso);
       if (!slots.length) {
-        f.time.innerHTML = '<option value="">None left</option>';
-        f.time.disabled = true;
-      } else {
-        f.time.innerHTML = '<option value="">Choose…</option>' + slots.map((t) => {
-          const c = toClock(t);
-          return `<option value="${c}"${c === keep ? " selected" : ""}>${c}</option>`;
-        }).join("");
-        f.time.disabled = false;
+        timesEl.innerHTML = '<p class="times__empty">No times left that day — pick another.</p>';
+        return;
       }
-      hint.textContent = `${h.day}: we seat from ${h.open} to ${toClock(toMinutes(h.close) - R.lastSeating)}.`;
+      const group = (label, list) => !list.length ? "" : `
+        <div class="times__group">
+          <p class="times__label">${label}</p>
+          <div class="times__grid">${list.map((t) => `
+            <label class="time">
+              <input type="radio" name="time" value="${t}"${t === state.mins ? " checked" : ""}>
+              <span class="time__face">${toClock(t)}</span>
+            </label>`).join("")}
+          </div>
+        </div>`;
+      timesEl.innerHTML = group("Morning", slots.filter((t) => t < 720)) + group("Afternoon", slots.filter((t) => t >= 720));
+    }
+    timesEl.addEventListener("change", (e) => {
+      if (e.target.name !== "time") return;
+      state.mins = +e.target.value;
+      showError("time", "");
+    });
+
+    /* ---- Errors: one message per field, shown on Continue / submit,
+       cleared as soon as the guest fixes that field. */
+    const errorTarget = {
+      date: () => daysEl, time: () => timesEl,
+      name: () => f.name, email: () => f.email, phone: () => f.phone
+    };
+    function showError(key, msg) {
+      const el = errorTarget[key](), err = $(`#r-${key}-err`, dialog);
+      el.setAttribute("aria-invalid", msg ? "true" : "false");
+      if (msg) el.setAttribute("aria-describedby", err.id); else el.removeAttribute("aria-describedby");
+      err.textContent = msg;
+      err.hidden = !msg;
     }
 
-    /* ---- Validation: one message per field, shown on submit and
-       cleared as soon as the guest edits that field. */
-    const checks = {
+    const checks1 = {
       date: () => {
-        const v = f.date.value;
-        if (!v) return "Pick a date.";
-        if (v < first) return "That date has passed — pick another.";
-        if (v > last) return `We take bookings up to ${R.daysAhead} days ahead.`;
+        if (!state.iso) return "Pick a day.";
+        if (state.iso < first) return "That day has passed — pick another.";
+        if (state.iso > last) return `We take bookings up to ${R.daysAhead} days ahead.`;
         return "";
       },
-      time: () => (f.time.value ? "" : (f.time.disabled && f.date.value ? "No times left that day — pick another date." : "Pick a time.")),
-      party: () => (f.party.value ? "" : "How many guests?"),
+      time: () => (state.mins !== null && slotsOn(state.iso).includes(state.mins) ? "" : "Pick a time.")
+    };
+    const checks2 = {
       name: () => (f.name.value.trim().length >= 2 ? "" : "Please enter your name."),
       email: () => {
         const v = f.email.value.trim();
@@ -519,47 +692,65 @@
         return digits >= 10 && digits <= 15 ? "" : "Please enter a phone number we can call.";
       }
     };
-
-    function showError(key, msg) {
-      const input = f[key], err = $(`#r-${key}-err`, dialog);
-      input.setAttribute("aria-invalid", msg ? "true" : "false");
-      if (msg) input.setAttribute("aria-describedby", err.id); else input.removeAttribute("aria-describedby");
-      err.textContent = msg;
-      err.hidden = !msg;
-    }
-
-    function validate() {
+    function run(checks) {
       let firstBad = null;
       Object.keys(checks).forEach((key) => {
         const msg = checks[key]();
         showError(key, msg);
-        if (msg && !firstBad) firstBad = f[key];
+        if (msg && !firstBad) firstBad = key;
       });
       return firstBad;
     }
+    Object.keys(checks2).forEach((key) => {
+      f[key].addEventListener("input", () => { if (f[key].getAttribute("aria-invalid") === "true") showError(key, ""); });
+    });
+
+    /* ---- Steps -------------------------------------------- */
+    const summary = () => `${fmtDay(state.iso, { weekday: "short", month: "short", day: "numeric" })} · ${toClock(state.mins)} · ${partyLabel(state.party)}`;
+
+    function goStep(n, { focus = true } = {}) {
+      steps.forEach((st) => { st.hidden = st.dataset.step !== String(n); });
+      $$("[data-step-dot]", dialog).forEach((dot) => {
+        const k = +dot.dataset.stepDot;
+        if (k === n) dot.setAttribute("aria-current", "step"); else dot.removeAttribute("aria-current");
+        dot.classList.toggle("is-done", k < n);
+      });
+      if (n === 2) $("[data-reserve-recap]", dialog).textContent = summary();
+      toTop();
+      if (!focus) return;
+      if (n === 2) f.name.focus();
+      else ($('.day input:checked', daysEl) || $(".day input", daysEl) || daysEl).focus();
+    }
+
+    $("[data-reserve-next]", dialog).addEventListener("click", () => {
+      const bad = run(checks1);
+      if (bad) {
+        const target = bad === "date" ? $(".day input", daysEl) : $(".time input", timesEl);
+        errorTarget[bad]().scrollIntoView({ block: "center", behavior: "smooth" });
+        if (target) target.focus({ preventScroll: true });
+        return;
+      }
+      goStep(2);
+    });
+    $("[data-reserve-back]", dialog).addEventListener("click", () => goStep(1));
 
     function setStatus(html) {
       status.innerHTML = html || "";
       status.hidden = !html;
     }
 
-    Object.keys(checks).forEach((key) => {
-      const clear = () => { if (f[key].getAttribute("aria-invalid") === "true") showError(key, ""); };
-      f[key].addEventListener("input", clear);
-      f[key].addEventListener("change", clear);
-    });
-    f.date.addEventListener("change", fillTimes);
-    f.date.addEventListener("input", fillTimes);
-
     function reset() {
       form.reset();
-      f.party.value = "2";
-      Object.keys(checks).forEach((key) => showError(key, ""));
+      state.iso = ""; state.mins = null;
+      setParty(2);
+      ["date", "time", ...Object.keys(checks2)].forEach((key) => showError(key, ""));
       setStatus("");
       formView.hidden = false;
       done.hidden = true;
       setWindow();
-      fillTimes();
+      renderDays();
+      renderTimes();
+      goStep(1, { focus: false });
     }
 
     /* ---- Open / close ------------------------------------- */
@@ -567,7 +758,9 @@
     function open() {
       if (sent) { reset(); sent = false; }
       setWindow();   // the window moves if the page sat open past a slot or midnight
-      fillTimes();
+      if (state.iso && (state.iso < first || state.iso > last)) { state.iso = ""; state.mins = null; }
+      renderDays();
+      renderTimes();
       if (dialog.open) return;
       if (typeof dialog.showModal === "function") dialog.showModal();
       else dialog.setAttribute("open", "");
@@ -605,8 +798,10 @@
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       setStatus("");
-      const bad = validate();
-      if (bad) { bad.focus(); return; }
+      // Step 1 can only have gone stale if the page sat open for a while.
+      if (run(checks1)) { goStep(1); return; }
+      const bad = run(checks2);
+      if (bad) { f[bad].focus(); return; }
 
       const callUs = `<a href="${esc(phoneHref)}">${esc(phone)}</a>`;
       if (!R.accessKey) {
@@ -614,20 +809,29 @@
         return;
       }
 
-      const party = partyLabel(+f.party.value);
-      const date = longDate(f.date.value);
-      const time = f.time.value;
-      const name = f.name.value.trim();
-      const email = f.email.value.trim();
-      const summary = `${party} on ${date} at ${time}`;
+      const booking = {
+        iso: state.iso, mins: state.mins,
+        party: partyLabel(state.party),
+        date: longDate(state.iso),
+        time: toClock(state.mins),
+        name: f.name.value.trim(),
+        email: f.email.value.trim()
+      };
 
       const showDone = () => {
         sent = true;
-        $("[data-reserve-summary]", dialog).innerHTML =
-          `<strong>${esc(summary)}</strong>, under ${esc(name)}. We'll confirm at ${esc(email)}.`;
+        $("[data-ticket-day]", dialog).textContent = booking.date.replace(/, \d{4}$/, "");
+        $("[data-ticket-time]", dialog).textContent = booking.time;
+        $("[data-ticket-party]", dialog).textContent = booking.party;
+        $("[data-ticket-name]", dialog).textContent = booking.name;
+        $("[data-ticket-email]", dialog).textContent = booking.email;
+        const cal = calendarLinks(booking);
+        $("[data-cal-ics]", dialog).href = cal.ics;
+        $("[data-cal-google]", dialog).href = cal.google;
         formView.hidden = true;
         done.hidden = false;
-        done.focus();
+        toTop();
+        done.focus({ preventScroll: true });   // keep the banner in view above the ticket
       };
 
       // Filled in by a bot: look successful, send nothing.
@@ -644,15 +848,15 @@
           signal: timeout.signal,
           body: JSON.stringify({
             access_key: R.accessKey,
-            subject: `Table request: ${name}, ${party}, ${date} at ${time}`,
+            subject: `Table request: ${booking.name}, ${booking.party}, ${booking.date} at ${booking.time}`,
             from_name: `${D.business.name} website`,
-            replyto: email,
-            "Name": name,
-            "Email": email,
+            replyto: booking.email,
+            "Name": booking.name,
+            "Email": booking.email,
             "Phone": f.phone.value.trim(),
-            "Date": date,
-            "Time": time,
-            "Guests": party,
+            "Date": booking.date,
+            "Time": booking.time,
+            "Guests": booking.party,
             "Special requests": f.notes.value.trim() || "None"
           })
         });
@@ -669,8 +873,10 @@
       }
     });
 
+    setParty(2);
     setWindow();
-    fillTimes();
+    renderDays();
+    renderTimes();
   }
 
   /* ---------- Boot ----------------------------------------- */
