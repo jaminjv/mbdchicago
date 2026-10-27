@@ -141,6 +141,8 @@ p  { text-wrap: pretty; }
 .btn--ghost:hover { --btn-bg: var(--white); --btn-fg: var(--cocoa); }
 .btn--ink   { --btn-bg: var(--cocoa); --btn-fg: var(--white); --btn-edge: var(--cocoa); }
 .btn--lg    { padding: 1.15rem 2.4rem; font-size: 1.08rem; }
+.btn--xl    { padding: 1.3rem 2.7rem; font-size: 1.22rem; }
+.btn--light { --btn-bg: var(--white); --btn-fg: var(--cocoa); --btn-edge: var(--cocoa); }
 .btn--sm    { padding: .6rem 1.15rem; font-size: .88rem; border-width: 2px; box-shadow: 0 4px 0 var(--btn-edge); }
 .btn[aria-disabled="true"] {
   --btn-bg: var(--cream-deep); --btn-fg: var(--ink-muted); --btn-edge: #d9c9b6;
@@ -218,7 +220,14 @@ p  { text-wrap: pretty; }
 .hero h1 { max-width: 15ch; }
 .hero h1 .script { display: block; font-size: 1.16em; line-height: .95; margin-bottom: -.06em; }
 .hero__sub { margin-top: 1.4rem; font-size: clamp(1.03rem, 1.9vw, 1.28rem); color: rgba(255,255,255,.82); max-width: 46ch; }
-.hero__cta { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2.3rem; }
+.hero__cta { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-top: 2.3rem; }
+/* Reserving leads: first, largest, and the only one with an icon. */
+.hero__reserve svg { width: 26px; height: 26px; flex: none; transition: transform .25s cubic-bezier(.34,1.8,.64,1); }
+.hero__reserve:hover svg { transform: rotate(-10deg) scale(1.12); }
+@media (max-width: 560px) {
+  .hero__cta .btn { flex: 1 1 0; padding-inline: 1rem; }
+  .hero__cta .hero__reserve { flex-basis: 100%; }
+}
 .hero__badges { display: flex; flex-wrap: wrap; gap: 1.6rem; margin-top: 2.8rem; font-size: .92rem; }
 .hero__badges li { display: flex; align-items: center; gap: .55rem; color: rgba(255,255,255,.86); font-weight: 600; }
 .hero__badges svg { width: 20px; height: 20px; color: var(--sunny); flex: none; }
@@ -248,10 +257,52 @@ p  { text-wrap: pretty; }
 .strip__item span { font-size: .82rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; opacity: .68; }
 
 /* --- Order platforms: small logo tiles --------------------------- */
-.orders {
+.orders { display: grid; justify-items: center; gap: clamp(1.4rem, 3vw, 2rem); }
+.orders__tiles {
   display: flex; flex-wrap: wrap; justify-content: center;
   gap: clamp(.8rem, 2vw, 1.4rem);
 }
+
+/* The featured entry (booking a table) leads the section, larger than
+   any platform tile. */
+.order-feature {
+  display: flex; align-items: center; gap: clamp(.9rem, 2.5vw, 1.4rem);
+  width: min(620px, 100%);
+  padding: clamp(1rem, 2.6vw, 1.4rem) clamp(1.1rem, 3vw, 1.6rem);
+  text-align: left; color: var(--cocoa);
+  background: var(--sunny);
+  border: 3px solid var(--cocoa); border-radius: var(--r-lg);
+  box-shadow: 0 8px 0 var(--cocoa);
+  transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s;
+}
+.order-feature:hover  { transform: translateY(-5px); box-shadow: 0 13px 0 var(--cocoa); }
+.order-feature:active { transform: translateY(4px);  box-shadow: 0 3px 0 var(--cocoa); }
+.order-feature__icon {
+  flex: none; width: clamp(58px, 9vw, 76px); aspect-ratio: 1;
+  display: grid; place-items: center; border-radius: 50%;
+  background: var(--cocoa); color: var(--sunny);
+  transition: transform .25s cubic-bezier(.34,1.8,.64,1);
+}
+.order-feature__icon svg { width: 52%; height: 52%; }
+.order-feature:hover .order-feature__icon { transform: rotate(-10deg) scale(1.06); }
+.order-feature__text { display: grid; gap: .15rem; min-width: 0; }
+.order-feature__title { font-weight: 800; font-size: clamp(1.3rem, 3.4vw, 1.75rem); line-height: 1.1; letter-spacing: -.01em; }
+.order-feature__tagline { font-size: clamp(.88rem, 1.8vw, 1rem); font-weight: 600; color: var(--cocoa-soft); text-wrap: balance; line-height: 1.4; }
+.order-feature__go {
+  flex: none; margin-left: auto;
+  width: 46px; height: 46px; display: grid; place-items: center; border-radius: 50%;
+  background: var(--white); border: 2px solid var(--cocoa);
+  transition: transform .18s;
+}
+.order-feature__go svg { width: 22px; height: 22px; }
+.order-feature:hover .order-feature__go { transform: translateX(4px); }
+@media (max-width: 420px) { .order-feature__go { display: none; } }
+
+.orders__or {
+  display: flex; align-items: center; gap: 1rem; width: min(620px, 100%);
+  font-size: .78rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted);
+}
+.orders__or::before, .orders__or::after { content: ""; flex: 1; height: 2px; background: var(--cream-deep); }
 .order-tile {
   display: flex; flex-direction: column; align-items: center; gap: .55rem;
   width: clamp(104px, 13vw, 132px);
@@ -1047,7 +1098,11 @@ button.day:focus-visible { outline: none; }
       Chipotle hollandaise. Chilaquiles worth waking up for. Crepes that need their own plate.
     </p>
     <div class="hero__cta">
-      <a class="btn btn--lg" href="#/menu">View Menu</a>
+      <a class="btn btn--xl hero__reserve" href="#reserve" aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4M9 15.5l2 2 4-4"/></svg>
+        Reserve a Table
+      </a>
+      <a class="btn btn--lg btn--light" href="#/menu">View Menu</a>
       <a class="btn btn--lg btn--ghost" href="#/catering">Catering</a>
     </div>
     <ul class="hero__badges">
@@ -2989,6 +3044,18 @@ window.MBD = (function () {
   ---------------------------------------------------------- */
   const ordering = [
     {
+      // Our own booking form, not a link out: `opens` makes it a button
+      // that opens the form. `featured` draws it as the large card above
+      // the delivery tiles instead of as one of them. Requests arrive by
+      // email — see `reservations` below for where they go.
+      key: "reserve", name: "Reserve a table", wordmark: "Reserve a Table",
+      brand: "#fdb100", fg: "#30221d",
+      note: "Book a table",
+      tagline: "Pick a day and a time in under a minute.",
+      opens: "reserve",
+      featured: true
+    },
+    {
       key: "toast", name: "Toast", wordmark: "Toast", brand: "#ff4c00", fg: "#ffffff",
       note: "Order direct",
       url: "https://earlymorningdelight.toast.site/order/early-morning-delight-1924-w-irving-park-rd"
@@ -3024,15 +3091,6 @@ window.MBD = (function () {
       key: "grubhub", name: "Grubhub", wordmark: "Grubhub", brand: "#f63440", fg: "#ffffff",
       note: "Delivery",
       url: "https://www.grubhub.com/restaurant/early-morning-delight-1924-w-irving-park-rd-chicago/5645664"
-    },
-    {
-      // Our own booking form, not a link out: `opens` makes the tile a
-      // button that opens it. Requests arrive by email — see
-      // `reservations` below for where they go.
-      key: "reserve", name: "Reserve a table", wordmark: "Reserve a Table",
-      brand: "#fdb100", fg: "#30221d",
-      note: "Book a table",
-      opens: "reserve"
     }
   ];
 
@@ -3518,7 +3576,8 @@ window.MBD_dishId = function (sectionId, name) {
     instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>',
     tiktok: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 2h-3v13.2a2.7 2.7 0 11-2.2-2.6V9.5a5.9 5.9 0 105.2 5.8V9a7 7 0 004.1 1.3V7.2a4.1 4.1 0 01-4.1-4.1V2z"/></svg>',
     burger: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
-    close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>'
+    close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+    calendarCheck: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4M9 15.5l2 2 4-4"/></svg>'
   };
 
   const tagIcon = {
@@ -3625,7 +3684,8 @@ window.MBD_dishId = function (sectionId, name) {
   function renderOrdering() {
     const grid = $("[data-ordering]");
     if (!grid) return;
-    grid.innerHTML = D.ordering.map((p) => {
+
+    const tile = (p) => {
       const art = p.logo
         ? `<img src="${esc(p.logo)}" alt="${esc(p.name)}">`
         : `<span class="order-tile__wordmark">${esc(p.wordmark || p.name)}</span>`;
@@ -3644,7 +3704,29 @@ window.MBD_dishId = function (sectionId, name) {
           <span class="order-tile__note">${esc(p.note)}</span>
           <span class="sr-only">${esc(p.action || "Order from")} ${esc(p.name)}</span>
         </a>`;
-    }).join("");
+    };
+
+    // A `featured` entry leads the section as a large card of its own,
+    // ahead of the row of platform tiles.
+    const feature = (p) => {
+      const inner = `
+          <span class="order-feature__icon" aria-hidden="true">${icon.calendarCheck}</span>
+          <span class="order-feature__text">
+            <span class="order-feature__title">${esc(p.wordmark || p.name)}</span>
+            ${p.tagline ? `<span class="order-feature__tagline">${esc(p.tagline)}</span>` : ""}
+          </span>
+          <span class="order-feature__go" aria-hidden="true">${icon.arrowR}</span>`;
+      return p.opens
+        ? `<button class="order-feature" type="button" data-open="${esc(p.opens)}" aria-haspopup="dialog">${inner}</button>`
+        : `<a class="order-feature" href="${esc(p.url)}" target="_blank" rel="noopener">${inner}</a>`;
+    };
+
+    const featured = D.ordering.filter((p) => p.featured);
+    const rest = D.ordering.filter((p) => !p.featured);
+    grid.innerHTML =
+      featured.map(feature).join("") +
+      (featured.length && rest.length ? '<p class="orders__or"><span>Or order online</span></p>' : "") +
+      `<div class="orders__tiles">${rest.map(tile).join("")}</div>`;
   }
 
   /* ---------- Specials ------------------------------------- */

@@ -58,6 +58,18 @@ window.MBD = (function () {
   ---------------------------------------------------------- */
   const ordering = [
     {
+      // Our own booking form, not a link out: `opens` makes it a button
+      // that opens the form. `featured` draws it as the large card above
+      // the delivery tiles instead of as one of them. Requests arrive by
+      // email — see `reservations` below for where they go.
+      key: "reserve", name: "Reserve a table", wordmark: "Reserve a Table",
+      brand: "#fdb100", fg: "#30221d",
+      note: "Book a table",
+      tagline: "Pick a day and a time in under a minute.",
+      opens: "reserve",
+      featured: true
+    },
+    {
       key: "toast", name: "Toast", wordmark: "Toast", brand: "#ff4c00", fg: "#ffffff",
       note: "Order direct",
       url: "https://earlymorningdelight.toast.site/order/early-morning-delight-1924-w-irving-park-rd"
@@ -93,15 +105,6 @@ window.MBD = (function () {
       key: "grubhub", name: "Grubhub", wordmark: "Grubhub", brand: "#f63440", fg: "#ffffff",
       note: "Delivery",
       url: "https://www.grubhub.com/restaurant/early-morning-delight-1924-w-irving-park-rd-chicago/5645664"
-    },
-    {
-      // Our own booking form, not a link out: `opens` makes the tile a
-      // button that opens it. Requests arrive by email — see
-      // `reservations` below for where they go.
-      key: "reserve", name: "Reserve a table", wordmark: "Reserve a Table",
-      brand: "#fdb100", fg: "#30221d",
-      note: "Book a table",
-      opens: "reserve"
     }
   ];
 

@@ -25,7 +25,8 @@
     instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>',
     tiktok: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 2h-3v13.2a2.7 2.7 0 11-2.2-2.6V9.5a5.9 5.9 0 105.2 5.8V9a7 7 0 004.1 1.3V7.2a4.1 4.1 0 01-4.1-4.1V2z"/></svg>',
     burger: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
-    close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>'
+    close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+    calendarCheck: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4M9 15.5l2 2 4-4"/></svg>'
   };
 
   const tagIcon = {
@@ -132,7 +133,8 @@
   function renderOrdering() {
     const grid = $("[data-ordering]");
     if (!grid) return;
-    grid.innerHTML = D.ordering.map((p) => {
+
+    const tile = (p) => {
       const art = p.logo
         ? `<img src="${esc(p.logo)}" alt="${esc(p.name)}">`
         : `<span class="order-tile__wordmark">${esc(p.wordmark || p.name)}</span>`;
@@ -151,7 +153,29 @@
           <span class="order-tile__note">${esc(p.note)}</span>
           <span class="sr-only">${esc(p.action || "Order from")} ${esc(p.name)}</span>
         </a>`;
-    }).join("");
+    };
+
+    // A `featured` entry leads the section as a large card of its own,
+    // ahead of the row of platform tiles.
+    const feature = (p) => {
+      const inner = `
+          <span class="order-feature__icon" aria-hidden="true">${icon.calendarCheck}</span>
+          <span class="order-feature__text">
+            <span class="order-feature__title">${esc(p.wordmark || p.name)}</span>
+            ${p.tagline ? `<span class="order-feature__tagline">${esc(p.tagline)}</span>` : ""}
+          </span>
+          <span class="order-feature__go" aria-hidden="true">${icon.arrowR}</span>`;
+      return p.opens
+        ? `<button class="order-feature" type="button" data-open="${esc(p.opens)}" aria-haspopup="dialog">${inner}</button>`
+        : `<a class="order-feature" href="${esc(p.url)}" target="_blank" rel="noopener">${inner}</a>`;
+    };
+
+    const featured = D.ordering.filter((p) => p.featured);
+    const rest = D.ordering.filter((p) => !p.featured);
+    grid.innerHTML =
+      featured.map(feature).join("") +
+      (featured.length && rest.length ? '<p class="orders__or"><span>Or order online</span></p>' : "") +
+      `<div class="orders__tiles">${rest.map(tile).join("")}</div>`;
   }
 
   /* ---------- Specials ------------------------------------- */
