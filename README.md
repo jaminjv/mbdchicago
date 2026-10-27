@@ -173,7 +173,7 @@ What the form enforces, all adjustable in the same block:
 | Setting | Default | |
 |---|---|---|
 | `slotMinutes` | 30 | times offered every half hour |
-| `lastSeating` | 30 | last table half an hour before closing (3:30 PM) |
+| `lastSeating` | 30 | last table half an hour before closing (2:30 PM) |
 | `minNotice` | 60 | today, nothing sooner than an hour from now |
 | `daysAhead` | 60 | bookings up to two months out |
 | `maxParty` | 12 | above that, guests choose "13+" |

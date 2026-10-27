@@ -26,13 +26,13 @@ window.MBD = (function () {
     rating: 4.9,
     reviewCount: 200,
     hours: [
-      { day: "Monday",    open: "8:00 AM", close: "4:00 PM", idx: 1 },
-      { day: "Tuesday",   open: "8:00 AM", close: "4:00 PM", idx: 2 },
-      { day: "Wednesday", open: "8:00 AM", close: "4:00 PM", idx: 3 },
-      { day: "Thursday",  open: "8:00 AM", close: "4:00 PM", idx: 4 },
-      { day: "Friday",    open: "8:00 AM", close: "4:00 PM", idx: 5 },
-      { day: "Saturday",  open: "7:00 AM", close: "4:00 PM", idx: 6 },
-      { day: "Sunday",    open: "7:00 AM", close: "4:00 PM", idx: 0 }
+      { day: "Monday",    open: "8:00 AM", close: "3:00 PM", idx: 1 },
+      { day: "Tuesday",   open: "8:00 AM", close: "3:00 PM", idx: 2 },
+      { day: "Wednesday", open: "8:00 AM", close: "3:00 PM", idx: 3 },
+      { day: "Thursday",  open: "8:00 AM", close: "3:00 PM", idx: 4 },
+      { day: "Friday",    open: "8:00 AM", close: "3:00 PM", idx: 5 },
+      { day: "Saturday",  open: "7:00 AM", close: "3:00 PM", idx: 6 },
+      { day: "Sunday",    open: "7:00 AM", close: "3:00 PM", idx: 0 }
     ]
   };
 
@@ -129,7 +129,7 @@ window.MBD = (function () {
     accessKey: "ddee47f6-9ba3-4282-8c2f-79d753479d75",
 
     slotMinutes: 30,       // times offered every 30 minutes
-    lastSeating: 30,       // last table this many minutes before closing (3:30 PM)
+    lastSeating: 30,       // last table this many minutes before closing (2:30 PM)
     minNotice: 60,         // today's earliest slot is at least this far out
     daysAhead: 60,         // how far ahead guests can book
     maxParty: 12           // above this, guests pick "13+" and get a call
