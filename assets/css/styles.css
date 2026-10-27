@@ -174,6 +174,18 @@ p  { text-wrap: pretty; }
 }
 .nav__links a:hover, .nav__links a[aria-current="page"] { color: var(--cocoa); background: var(--sunny); }
 .nav__cta { margin-left: .5rem; }
+/* .nav__links a would otherwise paint the button's label white on yellow. */
+.nav__links .nav__cta, .nav__links .nav__cta:hover { color: var(--cocoa); }
+/* Booking a table: outlined in yellow so it stands out from the plain
+   links without competing with the solid Order Now. */
+.nav__links .nav__reserve {
+  display: inline-flex; align-items: center; gap: .45rem;
+  margin-left: .35rem; padding: .48rem 1rem;
+  color: var(--sunny); font-weight: 800;
+  border: 2px solid var(--sunny);
+}
+.nav__links .nav__reserve:hover { color: var(--cocoa); background: var(--sunny); }
+.nav__reserve svg { width: 18px; height: 18px; flex: none; }
 .nav__burger { display: none; margin-left: auto; padding: .55rem; color: var(--white); }
 .nav__burger svg { width: 28px; height: 28px; }
 
@@ -190,6 +202,7 @@ p  { text-wrap: pretty; }
   .nav[data-open="true"] .nav__links { transform: translateY(0); }
   .nav__links a { padding: .85rem 1rem; font-size: 1.05rem; }
   .nav__cta { margin: .8rem 0 0; }
+  .nav__links .nav__reserve { justify-content: center; margin: .8rem 0 0; padding: .85rem 1rem; }
 }
 
 /* --- Hero -------------------------------------------------------- */

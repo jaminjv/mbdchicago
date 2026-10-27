@@ -129,7 +129,7 @@ window.MBD = (function () {
     accessKey: "ddee47f6-9ba3-4282-8c2f-79d753479d75",
 
     slotMinutes: 30,       // times offered every 30 minutes
-    lastSeating: 60,       // last table this many minutes before closing
+    lastSeating: 30,       // last table this many minutes before closing (3:30 PM)
     minNotice: 60,         // today's earliest slot is at least this far out
     daysAhead: 60,         // how far ahead guests can book
     maxParty: 12           // above this, guests pick "13+" and get a call

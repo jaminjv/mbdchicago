@@ -657,7 +657,10 @@
         return;
       }
       const h = hoursOn(state.iso);
-      hint.textContent = `· ${fmtDay(state.iso, { weekday: "long" })} ${h.open} – ${toClock(toMinutes(h.close) - R.lastSeating)}`;
+      // The restaurant's real hours, with the last bookable table spelled
+      // out separately so the cutoff is never mistaken for closing time.
+      const nb = (t) => t.replace(" ", "\u00a0");   // never split "3:30" from "PM"
+      hint.textContent = `· ${fmtDay(state.iso, { weekday: "long" })} ${nb(h.open)} – ${nb(h.close)}, last table ${nb(toClock(toMinutes(h.close) - R.lastSeating))}`;
       const slots = slotsOn(state.iso);
       if (!slots.length) {
         timesEl.innerHTML = '<p class="times__empty">No times left that day — pick another.</p>';
